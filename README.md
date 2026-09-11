@@ -1,114 +1,256 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# CampusRate API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST de gestion de données et services lié au campus.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+`camp-api` fournit un point d’entrée central pour enregistrer, consulter et exploiter les informations nécessaires. Le projet est développé avec [NestJS](https://nestjs.com/) et TypeScript.
 
-## Description
+> Le projet est en développement actif. Le contrat d’API peut évoluer avant la première version stable.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Fonctionnalités
 
-## Project setup
+- vérification de l’état du service;
+- gestion des locations;
+- réponses HTTP au format JSON;
+- architecture modulaire par domaine;
+- tests unitaires et tests de bout en bout;
+- contrôles de qualité avec ESLint et Prettier.
 
-```bash
-$ npm install
-```
+## Technologies
 
-## Compile and run the project
+- Node.js;
+- TypeScript;
+- NestJS;
+- Jest;
+- Supertest;
+- ESLint;
+- Prettier.
 
-```bash
-# development
-$ npm run start
+## Prérequis
 
-# watch mode
-$ npm run start:dev
+- une version de Node.js compatible avec le fichier `package.json`;
+- npm;
+- Git;
 
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+Vérifier l’environnement local :
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+node --version
+npm --version
+git --version
 ```
 
-## Deployment
+## Installation
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Cloner le dépôt :
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+git clone <URL_DU_DEPOT>
+cd camp-api
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Installer les dépendances :
 
-## Observability
+```bash
+npm install
+```
 
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
+## Configuration
 
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
+L’application attend la variable d’environnement suivante :
 
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
+| Variable | Obligatoire | Description | Exemple local |
+|---|---|---|---|
+| `PORT` | Oui | Port d’écoute du serveur HTTP | `3000` |
 
-## Resources
+Le numéro `3000` est seulement un exemple de configuration locale. L’application ne doit pas imposer silencieusement ce port dans son code.
 
-Check out a few resources that may come in handy when working with NestJS:
+Sous Linux ou macOS :
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observer](https://observer.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+PORT=3000 npm run start:dev
+```
 
-## Support
+Sous PowerShell :
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```powershell
+$env:PORT=3000
+npm run start:dev
+```
 
-## Stay in touch
+Si le projet utilise un fichier `.env`, créer celui-ci à partir du modèle versionné :
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+cp .env.example .env
+```
 
-## License
+Le fichier `.env` ne doit jamais être ajouté au dépôt.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Exécution
+
+### Développement
+
+```bash
+npm run start:dev
+```
+
+### Production
+
+```bash
+npm run build
+npm run start:prod
+```
+
+Avec `PORT=3000`, l’API est accessible à l’adresse suivante :
+
+```text
+http://localhost:3000/api
+```
+
+## API
+
+Toutes les routes sont exposées sous le préfixe global `/api/v1`.
+
+Consulter la [collection Postman](docs/Test_Postman.md) pour une liste des routes à tester.
+
+| Méthode | Route | Statut attendu | Description |
+|---|---|---:|---|
+| `GET` | `/api/v1/health` | `200 OK` | Vérifie l’état du service |
+| `GET` | `/api/v1/locations` | `200 OK` | Retourne les locations |
+| `POST` | `/api/v1/locations` | `201 Created` | Crée une location |
+| `PATCH` | `/api/v1/locations` | `200 OK` | Modifie une location |
+| `DELETE` | `/api/v1/locations` | `200 OK` | Supprime une location |
+
+### Vérifier l’état du service
+
+```bash
+curl -i http://localhost:3000/api/v1/health
+```
+
+Exemple de réponse :
+
+```json
+{
+  "status": "ok"
+}
+```
+
+### Obtenir les locations
+
+```bash
+curl -i -X GET http://localhost:3000/api/v1/locations
+```
+
+### Créer une location
+
+```bash
+curl -i \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Bibliothèque principale", "description":"Espace calme avec prises.", "category":"STUDY_SPACE", "address":"Pavillon A, local  A-210", "services":"["WIFI", "POWER_OUTLETS", "SEATING"]", "status":"ACTIVE"}' \
+  http://localhost:3000/api/v1/locations
+```
+Attribut généré par le serveur (ne doit pas être fourni par le client lors de la création) : 
+- id;
+- averageRating;
+- reviewCount;
+- createdAt;
+- updatedAt;
+
+Attribut falcutatif :
+- services;
+- status;
+
+## Persistance des données
+
+Dans l’état actuel du projet, les données sont conservés en mémoire. Les données sont donc réinitialisées au redémarrage de l’application.
+
+L’intégration d’une base de données persistante est prévue dans une prochaine version.
+
+## Structure du projet
+
+```text
+src/
+├── main.ts
+├── app.module.ts
+├── health/
+│   ├── health.controller.ts
+│   └── health.module.ts
+├── problems/
+│   ├── problems-400.dto.ts
+│   ├── problems-404.dto.ts
+│   ├── problems-500.dto.ts
+│   └── problems.entity.ts
+└── locations/
+    ├── locations.module.ts
+    ├── locations.controller.ts
+    ├── locations.controller.spec.ts
+    ├── locations.service.ts
+    ├── locations.service.spec.ts
+    └── dto/
+        └── create-locations.dto.ts
+        └── update-locations.dto.ts
+    └── entities/
+        └── locations.entity.ts
+└── ratings/
+    ├── ratings.module.ts
+    ├── ratings.controller.ts
+    ├── ratings.controller.spec.ts
+    ├── ratings.service.ts
+    ├── romms.service.spec.ts
+    └── dto/
+        └── create-ratings.dto.ts
+        └── update-ratings.dto.ts
+    └── entities/
+        └── ratings.entity.ts
+```
+
+Le projet suit une organisation par fonctionnalité :
+
+- les modules regroupent les composants d’un domaine;
+- les contrôleurs gèrent les échanges HTTP;
+- les services portent la logique applicative;
+- les DTO définissent la forme des données échangées.
+
+## Scripts disponibles
+
+| Commande | Description |
+|---|---|
+| `npm run start` | Démarre l’application |
+| `npm run start:dev` | Démarre l’application en mode surveillance |
+| `npm run build` | Compile l’application |
+| `npm run lint` | Analyse et corrige le code selon les règles configurées |
+| `npm run test` | Exécute les tests unitaires |
+| `npm run test:e2e` | Exécute les tests de bout en bout |
+| `npm run test:cov` | Produit le rapport de couverture des tests |
+
+## Qualité du code
+
+Avant de soumettre une pull request, exécuter :
+
+```bash
+npm run build
+npm run lint
+npm run test
+npm run test:e2e
+```
+
+## Sécurité
+
+Pour signaler une vulnérabilité, utiliser le mécanisme de signalement privé du dépôt plutôt qu’une issue publique.
+
+## Feuille de route
+
+- validation structurée des données reçues;
+- persistance dans une base de données;
+- documentation OpenAPI;
+- versionnement explicite de l’API;
+- authentification et autorisation;
+- observabilité et déploiement automatisé.
+
+## Documentation
+
+- [IAGraphie](docs/IAGraphie.docx)
+
+## Licence
+
+Consulter le fichier `LICENSE` à la racine du dépôt pour connaître les conditions d’utilisation et de redistribution.
