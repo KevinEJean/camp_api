@@ -172,6 +172,10 @@ L’intégration d’une base de données persistante est prévue dans une proch
 src/
 ├── main.ts
 ├── app.module.ts
+├── app.controller.spec.ts
+├── app.controller.ts
+├── app.services.ts
+├── app.configure-swagger.ts
 ├── health/
 │   ├── health.controller.ts
 │   └── health.module.ts
