@@ -128,10 +128,8 @@ curl -i http://localhost:3000/api/v1/health
 
 Exemple de réponse :
 
-```json
-{
-  "status": "ok"
-}
+```bash
+CampusRate API is up and running 🚀
 ```
 
 ### Obtenir les locations
