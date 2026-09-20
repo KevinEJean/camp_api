@@ -160,44 +160,49 @@ Attribut falcutatif :
 
 ## Persistance des données
 
-Dans l’état actuel du projet, les données sont conservés en mémoire. Les données sont donc réinitialisées au redémarrage de l’application.
-
-L’intégration d’une base de données persistante est prévue dans une prochaine version.
+La base de données persiste après réinitialisation. Au cas où le fichier (ou le dossier) est supprimée, une nouvelle base de données sera créée pendant l'initialisation de l'application.
 
 ## Structure du projet
 
 ```text
 src/
-├── main.ts
+├── app.controller.spec.ts
+├── app.controller.ts
 ├── app.module.ts
+├── app.service.ts
+├── main.ts
+├── config/
+│   └── db.config.ts
+├── data/
+│   └── database.json
 ├── health/
 │   ├── health.controller.ts
 │   └── health.module.ts
+├── locations/
+│   ├── locations.module.ts
+│   ├── locations.controller.ts
+│   ├── locations.controller.spec.ts
+│   ├── locations.service.ts
+│   ├── locations.service.spec.ts
+│   ├── dto/
+│   │   └── create-locations.dto.ts
+│   │   └── update-locations.dto.ts
+│   └── entities/
+│       └── locations.entity.ts
 ├── problems/
 │   ├── problems-400.dto.ts
 │   ├── problems-404.dto.ts
 │   ├── problems-500.dto.ts
 │   └── problems.entity.ts
-└── locations/
-    ├── locations.module.ts
-    ├── locations.controller.ts
-    ├── locations.controller.spec.ts
-    ├── locations.service.ts
-    ├── locations.service.spec.ts
-    └── dto/
-        └── create-locations.dto.ts
-        └── update-locations.dto.ts
-    └── entities/
-        └── locations.entity.ts
 └── ratings/
     ├── ratings.module.ts
     ├── ratings.controller.ts
     ├── ratings.controller.spec.ts
     ├── ratings.service.ts
     ├── romms.service.spec.ts
-    └── dto/
-        └── create-ratings.dto.ts
-        └── update-ratings.dto.ts
+    ├── dto/
+    │   └── create-ratings.dto.ts
+    │   └── update-ratings.dto.ts
     └── entities/
         └── ratings.entity.ts
 ```
