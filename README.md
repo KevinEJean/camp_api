@@ -141,22 +141,12 @@ curl -i -X GET http://localhost:3000/api/v1/locations
 ### Créer une location
 
 ```bash
-curl -i \
-  -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Bibliothèque principale", "description":"Espace calme avec prises.", "category":"STUDY_SPACE", "address":"Pavillon A, local  A-210", "services":"["WIFI", "POWER_OUTLETS", "SEATING"]", "status":"ACTIVE"}' \
-  http://localhost:3000/api/v1/locations
+curl -i -X POST -d '{"name":"Bibliothèque principale", "description":"Espace calme avec prises.", "category":"STUDY_SPACE", "address":"Pavillon A, local A-210", "services":["WIFI", "POWER_OUTLETS", "SEATING"], "status":"ACTIVE"}' http://localhost:3000/api/v1/locations
 ```
-Attribut généré par le serveur (ne doit pas être fourni par le client lors de la création) : 
-- id;
-- averageRating;
-- reviewCount;
-- createdAt;
-- updatedAt;
 
 Attribut falcutatif :
-- services;
-- status;
+- services (valeur par défaut = []);
+- status (valeur par défaut = ACTIVE);
 
 ## Persistance des données
 
@@ -185,10 +175,13 @@ src/
 │   ├── locations.service.ts
 │   ├── locations.service.spec.ts
 │   ├── dto/
-│   │   └── create-locations.dto.ts
+│   │   ├── create-locations.dto.ts
 │   │   └── update-locations.dto.ts
-│   └── entities/
-│       └── locations.entity.ts
+│   ├── entities/
+│   │   └── locations.entity.ts
+│   └── enums/
+│       ├── category.enum.ts
+│       └── status.enum.ts
 ├── problems/
 │   ├── problems-400.dto.ts
 │   ├── problems-404.dto.ts
@@ -201,7 +194,7 @@ src/
     ├── ratings.service.ts
     ├── romms.service.spec.ts
     ├── dto/
-    │   └── create-ratings.dto.ts
+    │   ├── create-ratings.dto.ts
     │   └── update-ratings.dto.ts
     └── entities/
         └── ratings.entity.ts

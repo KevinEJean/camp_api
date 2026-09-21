@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { VersioningType } from '@nestjs/common';
 import { AppModule, ObserveInstrument } from './app.module.js';
-import DatabaseGenerator from './config/db.config.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -12,7 +11,6 @@ async function bootstrap() {
     type: VersioningType.URI,
     defaultVersion: '1',
   });
-  new DatabaseGenerator().setup();
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
