@@ -103,7 +103,7 @@ npm run start:prod
 Avec `PORT=3000`, l’API est accessible à l’adresse suivante :
 
 ```text
-http://localhost:3000/api
+http://localhost:3000/api/v1
 ```
 
 ## API
