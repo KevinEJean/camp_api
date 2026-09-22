@@ -1,0 +1,31 @@
+{
+  "ratings": [
+    {
+      "_id": "rev_01JZPM34",
+      "placeId": "plc_01LKW463",
+      "authorName": "Anonymous",
+      "rating": "10",
+      "comment": "Parfait",
+      "createdAt": "2026-09-22T21:25:35.039Z",
+      "updatedAt": "2026-09-22T21:25:35.039Z"
+    },
+    {
+      "_id": "rev_01OMWK56",
+      "placeId": "plc_01LKW463",
+      "authorName": "MARKO",
+      "rating": "6",
+      "comment": "Pas fort, fort.",
+      "createdAt": "2026-09-22T21:56:56.176Z",
+      "updatedAt": "2026-09-22T21:56:56.176Z"
+    },
+    {
+      "_id": "rev_01RMOD91",
+      "placeId": "plc_01LKW463",
+      "authorName": "Bobby_",
+      "rating": "9",
+      "comment": "Meilleur du monde, mais ...",
+      "createdAt": "2026-09-22T21:59:55.453Z",
+      "updatedAt": "2026-09-22T21:59:55.453Z"
+    }
+  ]
+}

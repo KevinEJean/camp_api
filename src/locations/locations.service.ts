@@ -3,7 +3,6 @@ import { LocationsCreateDto } from './dto/create-locations.dto.js';
 import { LocationsUpdateDto } from './dto/update-locations.dto.js';
 import { LocationsResponseDto } from './dto/response-locations.dto.js';
 import { Locations } from './entities/locations.entity.js';
-import { Category } from './enums/category.enum.js';
 import { Status } from './enums/status.enum.js';
 import DatabaseGenerator from '../config/db.config.js';
 import * as fs from 'fs';
@@ -11,7 +10,7 @@ import * as fs from 'fs';
 @Injectable()
 export class LocationsService {
 
-    private readonly path = new DatabaseGenerator().path;
+    public readonly path = new DatabaseGenerator().pathLocations;
 
     constructor() {
         if (!fs.existsSync(this.path)) {
@@ -24,7 +23,7 @@ export class LocationsService {
             const rawData = fs.readFileSync(this.path, 'utf8');
             const parsed = JSON.parse(rawData);
 
-            return Array.isArray(parsed) ? parsed : [];
+            return Array.isArray(parsed.locations) ? parsed.locations : [];
         } catch (error) {
             console.error(error);
             return [];
@@ -78,7 +77,7 @@ export class LocationsService {
 
         try {
             repo.push(newLocations);
-            fs.writeFileSync(this.path, JSON.stringify(repo, null, 2), 'utf8');
+            fs.writeFileSync(this.path, JSON.stringify({locations: repo}, null, 2), 'utf8');
 
             return {
                 code: 201,
@@ -109,7 +108,7 @@ export class LocationsService {
         updatedRepo[targetIndex] = updatedLocation;
 
         try {
-            fs.writeFileSync(this.path, JSON.stringify(updatedRepo, null, 2), 'utf8');
+            fs.writeFileSync(this.path, JSON.stringify({locations: updatedRepo}, null, 2), 'utf8');
         } catch (error) {
             throw new InternalServerErrorException('Failed to update location.');
         }
@@ -133,7 +132,7 @@ export class LocationsService {
         const newRepo = repo.filter((item) => String(item._id) !== id);
 
         try {
-            fs.writeFileSync(this.path, JSON.stringify(newRepo, null, 2), 'utf8');
+            fs.writeFileSync(this.path, JSON.stringify({locations: newRepo}, null, 2), 'utf8');
         } catch (error) {
             throw new InternalServerErrorException('Failed to remove location.');
         }

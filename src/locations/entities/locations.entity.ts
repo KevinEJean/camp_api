@@ -1,6 +1,7 @@
 import { IsArray, IsDate, IsNotEmpty, IsNumber, IsString, Matches } from 'class-validator';
 import { Status } from '../enums/status.enum.js';
 import { Category } from '../enums/category.enum.js';
+import { Util } from '../../util/utils.js';
 
 export class Locations {
 
@@ -44,17 +45,9 @@ export class Locations {
     @IsDate()
     updatedAt: Date;
 
-    private static getRandomID(isstring: boolean): string {
-        const chars = isstring ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : '0123456789';
-        let result = '';
-        for (let i = 0; i < 3; i++) {
-            result += chars.at(Math.floor(Math.random() * chars.length))
-        }
-        return result;
-    }
-
     constructor(name: string, description: string, category: Category, address: string, services?: string[], status?: Status) {
-        this._id = `plc_01${Locations.getRandomID(true)}${Locations.getRandomID(false)}`;
+        const util = new Util();
+        this._id = `plc_01${util.getRandomID(true, 3)}${util.getRandomID(false, 3)}`;
         this.name = name;
         this.description = description;
         this.category = category;
