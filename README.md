@@ -154,7 +154,7 @@ curl.exe -i -X POST http://localhost:3000/api/v1/locations `
 ```
 
 Attribut falcutatif :
-- services = [] (valeur par défaut)
+- services = [ ] (valeur par défaut)
 - status = "ACTIVE" (valeur par défaut) ou "TEMPORARILY_CLOSED" ou "CLOSED"
 
 ## Persistance des données
@@ -245,15 +245,6 @@ npm run test:e2e
 ## Sécurité
 
 Pour signaler une vulnérabilité, utiliser le mécanisme de signalement privé du dépôt plutôt qu’une issue publique.
-
-## Feuille de route
-
-- validation structurée des données reçues;
-- persistance dans une base de données;
-- documentation OpenAPI;
-- versionnement explicite de l’API;
-- authentification et autorisation;
-- observabilité et déploiement automatisé.
 
 ## Documentation
 
