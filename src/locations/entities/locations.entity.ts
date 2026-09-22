@@ -33,18 +33,18 @@ export class Locations {
     status?: Status = Status.ACTIVE;
 
     @IsNumber()
-    averageRating: Number | null;
+    averageRating: number | null;
 
     @IsNumber()
-    reviewCount: Number;
+    reviewCount: number;
 
     @IsDate()
     createdAt: Date;
 
     @IsDate()
-    updateAt: Date;
+    updatedAt: Date;
 
-    private getRandomID(isstring: boolean): string {
+    private static getRandomID(isstring: boolean): string {
         const chars = isstring ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : '0123456789';
         let result = '';
         for (let i = 0; i < 3; i++) {
@@ -54,7 +54,7 @@ export class Locations {
     }
 
     constructor(name: string, description: string, category: Category, address: string, services?: string[], status?: Status) {
-        this._id = `plc_01${this.getRandomID(true)}${this.getRandomID(false)}`;
+        this._id = `plc_01${Locations.getRandomID(true)}${Locations.getRandomID(false)}`;
         this.name = name;
         this.description = description;
         this.category = category;
@@ -64,6 +64,6 @@ export class Locations {
         this.averageRating = null; // check if ratings exists (float)
         this.reviewCount = 0 // check if reviews exists (int)
         this.createdAt = new Date();
-        this.updateAt = new Date();
+        this.updatedAt = new Date();
     }
 }

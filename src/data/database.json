@@ -1,1 +1,16 @@
-{}
+[
+  {
+    "_id": "plc_01PPK533",
+    "name": "Bibliothèque principa",
+    "description": "Terrain de soccer certifier par la FIFA.",
+    "category": "SPORTS",
+    "address": "7000 Blvd Maurice-Duplessis",
+    "services": [],
+    "status": "CLOSED",
+    "averageRating": null,
+    "reviewCount": 0,
+    "createdAt": "2026-09-22T01:51:35.855Z",
+    "updateAt": "2026-09-22T01:51:35.855Z",
+    "updatedAt": "2026-09-22T03:29:59.398Z"
+  }
+]

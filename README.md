@@ -116,9 +116,10 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste des route
 |---|---|---:|---|
 | `GET` | `/api/v1/health` | `200 OK` | Vérifie l’état du service |
 | `GET` | `/api/v1/locations` | `200 OK` | Retourne les locations |
+| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une locations |
 | `POST` | `/api/v1/locations` | `201 Created` | Crée une location |
-| `PATCH` | `/api/v1/locations` | `200 OK` | Modifie une location |
-| `DELETE` | `/api/v1/locations` | `200 OK` | Supprime une location |
+| `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie une location |
+| `DELETE` | `/api/v1/locations/{id}` | `200 OK` | Supprime une location |
 
 ### Vérifier l’état du service
 
@@ -140,13 +141,21 @@ curl -i -X GET http://localhost:3000/api/v1/locations
 
 ### Créer une location
 
+Bash
 ```bash
 curl -i -X POST -d '{"name":"Bibliothèque principale", "description":"Espace calme avec prises.", "category":"STUDY_SPACE", "address":"Pavillon A, local A-210", "services":["WIFI", "POWER_OUTLETS", "SEATING"], "status":"ACTIVE"}' http://localhost:3000/api/v1/locations
 ```
 
+PowerShell
+```powershell
+curl.exe -i -X POST http://localhost:3000/api/v1/locations `
+  -H "Content-Type: application/json" `
+  -d "{\`"name\`":\`"Bibliothèque principale\`", \`"description\`":\`"Espace calme avec prises.\`", \`"category\`":\`"STUDY_SPACE\`", \`"address\`":\`"Pavillon A, local A-210\`", \`"services\`":[\`"WIFI\`",\`"POWER_OUTLETS\`",\`"SEATING\`"], \`"status\`":\`"ACTIVE\`"}"
+```
+
 Attribut falcutatif :
-- services (valeur par défaut = []);
-- status (valeur par défaut = ACTIVE);
+- services = [] (valeur par défaut)
+- status = "ACTIVE" (valeur par défaut) ou "TEMPORARILY_CLOSED" ou "CLOSED"
 
 ## Persistance des données
 
@@ -159,6 +168,7 @@ src/
 ├── app.controller.spec.ts
 ├── app.controller.ts
 ├── app.module.ts
+├── app.service.spec.ts
 ├── app.service.ts
 ├── main.ts
 ├── config/
@@ -166,6 +176,7 @@ src/
 ├── data/
 │   └── database.json
 ├── health/
+│   ├── health.controller.spec.ts
 │   ├── health.controller.ts
 │   └── health.module.ts
 ├── locations/
@@ -176,6 +187,7 @@ src/
 │   ├── locations.service.spec.ts
 │   ├── dto/
 │   │   ├── create-locations.dto.ts
+│   │   ├── response-locations.dto.ts
 │   │   └── update-locations.dto.ts
 │   ├── entities/
 │   │   └── locations.entity.ts

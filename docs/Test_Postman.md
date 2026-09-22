@@ -2,12 +2,20 @@
 
 *Remplacer le port et version au besoin* 
 
+## Health
+
 ```bash
 GET http://localhost:3000/api/v1/health
 ```
 
+## Locations
+
 ```bash
 GET http://localhost:3000/api/v1/locations
+```
+
+```bash
+GET http://localhost:3000/api/v1/locations/{id}
 ```
 
 ```bash
@@ -20,19 +28,21 @@ curl -i \
 ```
 
 ```bash
-PATCH http://localhost:3000/api/v1/locations
+PATCH http://localhost:3000/api/v1/locations/{id}
 curl -i \
   -X PATCH \
   -H "Content-Type: application/json" \
-  -d '{"id":"1"}' \
-  http://localhost:3000/api/v1/locations
+  -d '{"status":"CLOSED"}' \
+  http://localhost:3000/api/v1/locations/{id}
 ```
 
 ```bash
-DELETE http://localhost:3000/api/v1/locations
+DELETE http://localhost:3000/api/v1/locations/{id}
 curl -i \
   -X DELETE \
   -H "Content-Type: application/json" \
-  -d '{"id":"1"}' \
-  http://localhost:3000/api/v1/locations
+  -d '{"id":"plc_00ABC123"}' \
+  http://localhost:3000/api/v1/locations/{id}
 ```
+
+## Ratings

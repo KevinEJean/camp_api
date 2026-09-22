@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { LocationsCreateDto } from './dto/create-locations.dto.js';
 import { LocationsUpdateDto } from './dto/update-locations.dto.js';
 import { LocationsResponseDto } from './dto/response-locations.dto.js';
@@ -19,84 +19,125 @@ export class LocationsService {
         }
     }
 
-    findAll(): LocationsCreateDto[] {
+    findAll(): Locations[] {
         try {
-
             const rawData = fs.readFileSync(this.path, 'utf8');
+            const parsed = JSON.parse(rawData);
 
-            return JSON.parse(rawData) as LocationsCreateDto[];
-
+            return Array.isArray(parsed) ? parsed : [];
         } catch (error) {
-            throw new Error('Failed to find all locations'); // throw error 500
+            console.error(error);
+            return [];
         }
     }
 
     findOne(id: string): LocationsResponseDto {
         try {
-            const rawData = fs.readFileSync(this.path, 'utf8');
-            const repo = JSON.parse(rawData) as Locations[];
-            let result = new Locations('test', 'test', Category.OTHER, 'test');
+            const repo = this.findAll();
+            const location = repo.find((item) => item._id === id);
 
-            for (let i = 0; i < repo.length; i++) {
-                if (repo[i]._id == id) {
-                    result = repo[i];
-                }
+            if (!location) {
+                throw new NotFoundException(`Location with ID "${id}" not found.`);
             }
 
-            // if (result.name == 'test') {
-            // throw error 404 (Not Found)
-            // }
+            const createdAtDate = location.createdAt ? new Date(location.createdAt) : new Date();
+            const updatedAtDate = location.updatedAt ? new Date(location.updatedAt) : new Date();
 
-            const response: LocationsResponseDto = {
+            return {
                 code: 200,
-                name: result.name,
-                description: result.description,
-                category: result.category,
-                address: result.address,
-                services: result.services ?? [],
-                status: result.status ?? Status.ACTIVE,
-                createdAt: result.createdAt.toISOString(),
-                updatedAt: result.updateAt.toISOString()
+                name: location.name,
+                description: location.description,
+                category: location.category,
+                address: location.address,
+                services: location.services ?? [],
+                status: location.status ?? Status.ACTIVE,
+                createdAt: createdAtDate.toISOString(),
+                updatedAt: updatedAtDate.toISOString()
             }
-
-            return response
-
         } catch (error) {
-            throw new Error('Failed to find location'); // throw error 500
+            throw new InternalServerErrorException('Failed to find location');
         }
     }
 
     create(dto: LocationsCreateDto): LocationsResponseDto {
+        const repo = this.findAll();
+        const isDuplicate = repo.some((item) => item.name == dto.name);
+
+        if (isDuplicate) {
+            throw new BadRequestException(`Duplicates not allowed: Location with name "${dto.name}" already exists.`);
+        }
+
+        const newLocations = new Locations(
+            dto.name,
+            dto.description,
+            dto.category,
+            dto.address,
+            dto.services ?? [],
+            dto.status ?? Status.ACTIVE
+        );
+
         try {
-            const repo = this.findAll();
-
-            for (let i = 0; i < repo.length; i++) {
-                if (repo[i].name == dto.name) {
-                    throw new Error(); // throw error 400 (duplicate)
-                }
-            }
-
-            repo.push(dto);
+            repo.push(newLocations);
             fs.writeFileSync(this.path, JSON.stringify(repo, null, 2), 'utf8');
 
-            const response: LocationsResponseDto = {
+            return {
                 code: 201,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            }
-
-            return response;
-
+                createdAt: new Date().toISOString()
+            };
         } catch (error) {
-            throw new Error('Failed to create location'); // throw error 500
+            throw new InternalServerErrorException('Failed to create location.');
         }
     }
 
-    update(dto: LocationsUpdateDto): LocationsResponseDto[] {
-        return [];
+    update(id: string, dto: LocationsUpdateDto): LocationsResponseDto {
+        const repo = this.findAll();
+        const targetIndex = repo.findIndex((item) => String(item._id) === id);
+
+        if (targetIndex === -1) {
+            throw new NotFoundException(`Location with ID "${id}" not found.`);
+        }
+
+        const updatedLocation: Locations = {
+            ...repo[targetIndex],
+            ...Object.fromEntries(
+                Object.entries(dto).filter(([_, value]) => value !== undefined)
+            ),
+            updatedAt: new Date()
+        }
+
+        const updatedRepo = [...repo];
+        updatedRepo[targetIndex] = updatedLocation;
+
+        try {
+            fs.writeFileSync(this.path, JSON.stringify(updatedRepo, null, 2), 'utf8');
+        } catch (error) {
+            throw new InternalServerErrorException('Failed to update location.');
+        }
+
+        return {
+            code: 200,
+            name: updatedLocation.name,
+            description: updatedLocation.description,
+            category: updatedLocation.category,
+            address: updatedLocation.address,
+            services: updatedLocation.services ?? [],
+            status: updatedLocation.status ?? Status.ACTIVE,
+            updatedAt: updatedLocation.updatedAt.toISOString()
+        };
     }
 
-    remove(id: string) {
-        return [];
+    remove(id: string): LocationsResponseDto {
+        this.findOne(id);
+
+        const repo = this.findAll();
+        const newRepo = repo.filter((item) => String(item._id) !== id);
+
+        try {
+            fs.writeFileSync(this.path, JSON.stringify(newRepo, null, 2), 'utf8');
+        } catch (error) {
+            throw new InternalServerErrorException('Failed to remove location.');
+        }
+
+        return { code: 204 };
     }
 }
