@@ -119,7 +119,7 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste des route
 | `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une locations |
 | `POST` | `/api/v1/locations` | `201 Created` | Crée une location |
 | `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie une location |
-| `DELETE` | `/api/v1/locations/{id}` | `200 OK` | Supprime une location |
+| `DELETE` | `/api/v1/locations/{id}` | `204 OK` | Supprime une location |
 
 ### Vérifier l’état du service
 
