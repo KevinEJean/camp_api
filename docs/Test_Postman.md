@@ -1,6 +1,6 @@
 # Collection Postman pour essais manuels :
 
-*Remplacer le port et version au besoin* 
+*Remplacer le port et la version au besoin* 
 
 ## Health
 
