@@ -103,7 +103,7 @@ npm run start:prod
 Avec `PORT=3000`, l’API est accessible à l’adresse suivante :
 
 ```text
-http://localhost:3000/api
+http://localhost:3000/api/v1
 ```
 
 ## API
@@ -116,9 +116,10 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste des route
 |---|---|---:|---|
 | `GET` | `/api/v1/health` | `200 OK` | Vérifie l’état du service |
 | `GET` | `/api/v1/locations` | `200 OK` | Retourne les locations |
+| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une locations |
 | `POST` | `/api/v1/locations` | `201 Created` | Crée une location |
-| `PATCH` | `/api/v1/locations` | `200 OK` | Modifie une location |
-| `DELETE` | `/api/v1/locations` | `200 OK` | Supprime une location |
+| `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie une location |
+| `DELETE` | `/api/v1/locations/{id}` | `204 OK` | Supprime une location |
 
 ### Vérifier l’état du service
 
@@ -140,23 +141,21 @@ curl -i -X GET http://localhost:3000/api/v1/locations
 
 ### Créer une location
 
+Bash
 ```bash
-curl -i \
-  -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Bibliothèque principale", "description":"Espace calme avec prises.", "category":"STUDY_SPACE", "address":"Pavillon A, local  A-210", "services":"["WIFI", "POWER_OUTLETS", "SEATING"]", "status":"ACTIVE"}' \
-  http://localhost:3000/api/v1/locations
+curl -i -X POST -d '{"name":"Bibliothèque principale", "description":"Espace calme avec prises.", "category":"STUDY_SPACE", "address":"Pavillon A, local A-210", "services":["WIFI", "POWER_OUTLETS", "SEATING"], "status":"ACTIVE"}' http://localhost:3000/api/v1/locations
 ```
-Attribut généré par le serveur (ne doit pas être fourni par le client lors de la création) : 
-- id;
-- averageRating;
-- reviewCount;
-- createdAt;
-- updatedAt;
+
+PowerShell
+```powershell
+curl.exe -i -X POST http://localhost:3000/api/v1/locations `
+  -H "Content-Type: application/json" `
+  -d "{\`"name\`":\`"Bibliothèque principale\`", \`"description\`":\`"Espace calme avec prises.\`", \`"category\`":\`"STUDY_SPACE\`", \`"address\`":\`"Pavillon A, local A-210\`", \`"services\`":[\`"WIFI\`",\`"POWER_OUTLETS\`",\`"SEATING\`"], \`"status\`":\`"ACTIVE\`"}"
+```
 
 Attribut falcutatif :
-- services;
-- status;
+- services = [ ] (valeur par défaut)
+- status = "ACTIVE" (valeur par défaut) ou "TEMPORARILY_CLOSED" ou "CLOSED"
 
 ## Persistance des données
 
@@ -169,6 +168,7 @@ src/
 ├── app.controller.spec.ts
 ├── app.controller.ts
 ├── app.module.ts
+├── app.service.spec.ts
 ├── app.service.ts
 ├── main.ts
 ├── config/
@@ -176,6 +176,7 @@ src/
 ├── data/
 │   └── database.json
 ├── health/
+│   ├── health.controller.spec.ts
 │   ├── health.controller.ts
 │   └── health.module.ts
 ├── locations/
@@ -185,10 +186,14 @@ src/
 │   ├── locations.service.ts
 │   ├── locations.service.spec.ts
 │   ├── dto/
-│   │   └── create-locations.dto.ts
+│   │   ├── create-locations.dto.ts
+│   │   ├── response-locations.dto.ts
 │   │   └── update-locations.dto.ts
-│   └── entities/
-│       └── locations.entity.ts
+│   ├── entities/
+│   │   └── locations.entity.ts
+│   └── enums/
+│       ├── category.enum.ts
+│       └── status.enum.ts
 ├── problems/
 │   ├── problems-400.dto.ts
 │   ├── problems-404.dto.ts
@@ -201,7 +206,7 @@ src/
     ├── ratings.service.ts
     ├── romms.service.spec.ts
     ├── dto/
-    │   └── create-ratings.dto.ts
+    │   ├── create-ratings.dto.ts
     │   └── update-ratings.dto.ts
     └── entities/
         └── ratings.entity.ts
@@ -241,18 +246,10 @@ npm run test:e2e
 
 Pour signaler une vulnérabilité, utiliser le mécanisme de signalement privé du dépôt plutôt qu’une issue publique.
 
-## Feuille de route
-
-- validation structurée des données reçues;
-- persistance dans une base de données;
-- documentation OpenAPI;
-- versionnement explicite de l’API;
-- authentification et autorisation;
-- observabilité et déploiement automatisé.
-
 ## Documentation
 
 - [IAGraphie](docs/IAGraphie.docx)
+- [Postman](docs/Test_Postman.md)
 
 ## Licence
 
