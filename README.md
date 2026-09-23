@@ -10,9 +10,9 @@ API REST de gestion de données et services lié au campus.
 
 - vérification de l’état du service;
 - gestion des locations;
+- gestion d'erreures globale
 - réponses HTTP au format JSON;
 - architecture modulaire par domaine;
-- tests unitaires et tests de bout en bout;
 - contrôles de qualité avec ESLint et Prettier.
 
 ## Technologies
@@ -197,10 +197,12 @@ src/
 │       ├── category.enum.ts
 │       └── status.enum.ts
 ├── problems/
-│   ├── problems-400.dto.ts
-│   ├── problems-404.dto.ts
-│   ├── problems-500.dto.ts
-│   └── problems.entity.ts
+│   ├── problems-manager.ts
+│   ├── problems.dto.ts
+│   ├── problems.entity.ts
+│   ├── details/
+│   │   ├── problems-default.ts
+│   │   ├── problems-http.ts
 └── ratings/
     ├── ratings.module.ts
     ├── ratings.controller.ts

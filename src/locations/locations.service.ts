@@ -54,7 +54,7 @@ export class LocationsService {
                 updatedAt: updatedAtDate.toISOString()
             }
         } catch (error) {
-            throw new InternalServerErrorException('Failed to find location');
+            throw new InternalServerErrorException(error);
         }
     }
 
@@ -77,15 +77,14 @@ export class LocationsService {
 
         try {
             repo.push(newLocations);
-            fs.writeFileSync(this.path, JSON.stringify({locations: repo}, null, 2), 'utf8');
-
-            return {
-                code: 201,
-                createdAt: new Date().toISOString()
-            };
+            fs.writeFileSync(this.path, JSON.stringify({ locations: repo }, null, 2), 'utf8');
         } catch (error) {
-            throw new InternalServerErrorException('Failed to create location.');
+            throw new InternalServerErrorException(error);
         }
+        return {
+            code: 201,
+            createdAt: new Date().toISOString()
+        };
     }
 
     update(id: string, dto: LocationsUpdateDto): LocationsResponseDto {
@@ -108,9 +107,9 @@ export class LocationsService {
         updatedRepo[targetIndex] = updatedLocation;
 
         try {
-            fs.writeFileSync(this.path, JSON.stringify({locations: updatedRepo}, null, 2), 'utf8');
+            fs.writeFileSync(this.path, JSON.stringify({ locations: updatedRepo }, null, 2), 'utf8');
         } catch (error) {
-            throw new InternalServerErrorException('Failed to update location.');
+            throw new InternalServerErrorException(error);
         }
 
         return {
@@ -132,9 +131,9 @@ export class LocationsService {
         const newRepo = repo.filter((item) => String(item._id) !== id);
 
         try {
-            fs.writeFileSync(this.path, JSON.stringify({locations: newRepo}, null, 2), 'utf8');
+            fs.writeFileSync(this.path, JSON.stringify({ locations: newRepo }, null, 2), 'utf8');
         } catch (error) {
-            throw new InternalServerErrorException('Failed to remove location.');
+            throw new InternalServerErrorException(error);
         }
 
         return { code: 204 };

@@ -13,19 +13,28 @@
       "_id": "rev_01OMWK56",
       "placeId": "plc_01LKW463",
       "authorName": "MARKO",
-      "rating": "6",
+      "rating": "0",
       "comment": "Pas fort, fort.",
       "createdAt": "2026-09-22T21:56:56.176Z",
-      "updatedAt": "2026-09-22T21:56:56.176Z"
+      "updatedAt": "2026-09-22T23:39:21.599Z"
     },
     {
-      "_id": "rev_01RMOD91",
+      "_id": "rev_01PHJX78",
       "placeId": "plc_01LKW463",
       "authorName": "Bobby_",
       "rating": "9",
       "comment": "Meilleur du monde, mais ...",
-      "createdAt": "2026-09-22T21:59:55.453Z",
-      "updatedAt": "2026-09-22T21:59:55.453Z"
+      "createdAt": "2026-09-22T23:28:29.304Z",
+      "updatedAt": "2026-09-22T23:28:29.304Z"
+    },
+    {
+      "_id": "rev_01DQGM59",
+      "placeId": "plc_01LKW463",
+      "authorName": "Bobby_",
+      "rating": "9",
+      "comment": "SO MUCH FUN!!!!1!!1!",
+      "createdAt": "2026-09-22T23:46:25.705Z",
+      "updatedAt": "2026-09-22T23:46:25.705Z"
     }
   ]
 }
