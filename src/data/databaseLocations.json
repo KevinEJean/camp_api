@@ -1,0 +1,21 @@
+{
+  "locations": [
+    {
+      "_id": "plc_01AAC647",
+      "name": "Bibliothèque Centrale",
+      "description": "Espace de travail calme avec postes informatiques et salles de réunion.",
+      "category": "STUDY_SPACE",
+      "address": "1234, rue de l'Université, Montréal, QC",
+      "services": [
+        "Wi-Fi",
+        "Impression",
+        "Salles d'étude"
+      ],
+      "status": "ACTIVE",
+      "averageRating": null,
+      "reviewCount": 0,
+      "createdAt": "2026-09-23T02:40:36.956Z",
+      "updatedAt": "2026-09-23T02:40:36.956Z"
+    }
+  ]
+}
