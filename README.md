@@ -10,9 +10,9 @@ API REST de gestion de données et services lié au campus.
 
 - vérification de l’état du service;
 - gestion des locations;
+- gestion d'erreures globale
 - réponses HTTP au format JSON;
 - architecture modulaire par domaine;
-- tests unitaires et tests de bout en bout;
 - contrôles de qualité avec ESLint et Prettier.
 
 ## Technologies
@@ -103,7 +103,7 @@ npm run start:prod
 Avec `PORT=3000`, l’API est accessible à l’adresse suivante :
 
 ```text
-http://localhost:3000/api
+http://localhost:3000/api/v1
 ```
 
 ## API
@@ -116,9 +116,10 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste des route
 |---|---|---:|---|
 | `GET` | `/api/v1/health` | `200 OK` | Vérifie l’état du service |
 | `GET` | `/api/v1/locations` | `200 OK` | Retourne les locations |
+| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une locations |
 | `POST` | `/api/v1/locations` | `201 Created` | Crée une location |
-| `PATCH` | `/api/v1/locations` | `200 OK` | Modifie une location |
-| `DELETE` | `/api/v1/locations` | `200 OK` | Supprime une location |
+| `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie une location |
+| `DELETE` | `/api/v1/locations/{id}` | `204 OK` | Supprime une location |
 
 ### Vérifier l’état du service
 
@@ -128,10 +129,8 @@ curl -i http://localhost:3000/api/v1/health
 
 Exemple de réponse :
 
-```json
-{
-  "status": "ok"
-}
+```bash
+CampusRate API is up and running 🚀
 ```
 
 ### Obtenir les locations
@@ -142,68 +141,77 @@ curl -i -X GET http://localhost:3000/api/v1/locations
 
 ### Créer une location
 
+Bash
 ```bash
-curl -i \
-  -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Bibliothèque principale", "description":"Espace calme avec prises.", "category":"STUDY_SPACE", "address":"Pavillon A, local  A-210", "services":"["WIFI", "POWER_OUTLETS", "SEATING"]", "status":"ACTIVE"}' \
-  http://localhost:3000/api/v1/locations
+curl -i -X POST -d '{"name":"Bibliothèque principale", "description":"Espace calme avec prises.", "category":"STUDY_SPACE", "address":"Pavillon A, local A-210", "services":["WIFI", "POWER_OUTLETS", "SEATING"], "status":"ACTIVE"}' http://localhost:3000/api/v1/locations
 ```
-Attribut généré par le serveur (ne doit pas être fourni par le client lors de la création) : 
-- id;
-- averageRating;
-- reviewCount;
-- createdAt;
-- updatedAt;
+
+PowerShell
+```powershell
+curl.exe -i -X POST http://localhost:3000/api/v1/locations `
+  -H "Content-Type: application/json" `
+  -d "{\`"name\`":\`"Bibliothèque principale\`", \`"description\`":\`"Espace calme avec prises.\`", \`"category\`":\`"STUDY_SPACE\`", \`"address\`":\`"Pavillon A, local A-210\`", \`"services\`":[\`"WIFI\`",\`"POWER_OUTLETS\`",\`"SEATING\`"], \`"status\`":\`"ACTIVE\`"}"
+```
 
 Attribut falcutatif :
-- services;
-- status;
+- services = [ ] (valeur par défaut)
+- status = "ACTIVE" (valeur par défaut) ou "TEMPORARILY_CLOSED" ou "CLOSED"
 
 ## Persistance des données
 
-Dans l’état actuel du projet, les données sont conservés en mémoire. Les données sont donc réinitialisées au redémarrage de l’application.
-
-L’intégration d’une base de données persistante est prévue dans une prochaine version.
+La base de données persiste après réinitialisation. Au cas où le fichier (ou le dossier) est supprimée, une nouvelle base de données sera créée pendant l'initialisation de l'application.
 
 ## Structure du projet
 
 ```text
 src/
-├── main.ts
-├── app.module.ts
 ├── app.controller.spec.ts
 ├── app.controller.ts
-├── app.services.ts
-├── app.configure-swagger.ts
+├── app.module.ts
+├── app.service.spec.ts
+├── app.service.ts
+├── main.ts
+├── util/
+│   └── util.ts
+├── config/
+│   └── db.config.ts
+├── data/
+│   └── database.json
 ├── health/
+│   ├── health.controller.spec.ts
 │   ├── health.controller.ts
 │   └── health.module.ts
+├── locations/
+│   ├── locations.module.ts
+│   ├── locations.controller.ts
+│   ├── locations.controller.spec.ts
+│   ├── locations.service.ts
+│   ├── locations.service.spec.ts
+│   ├── dto/
+│   │   ├── create-locations.dto.ts
+│   │   ├── response-locations.dto.ts
+│   │   └── update-locations.dto.ts
+│   ├── entities/
+│   │   └── locations.entity.ts
+│   └── enums/
+│       ├── category.enum.ts
+│       └── status.enum.ts
 ├── problems/
-│   ├── problems-400.dto.ts
-│   ├── problems-404.dto.ts
-│   ├── problems-500.dto.ts
-│   └── problems.entity.ts
-└── locations/
-    ├── locations.module.ts
-    ├── locations.controller.ts
-    ├── locations.controller.spec.ts
-    ├── locations.service.ts
-    ├── locations.service.spec.ts
-    └── dto/
-        └── create-locations.dto.ts
-        └── update-locations.dto.ts
-    └── entities/
-        └── locations.entity.ts
+│   ├── problems-manager.ts
+│   ├── problems.dto.ts
+│   ├── problems.entity.ts
+│   ├── details/
+│   │   ├── problems-default.ts
+│   │   ├── problems-http.ts
 └── ratings/
     ├── ratings.module.ts
     ├── ratings.controller.ts
     ├── ratings.controller.spec.ts
     ├── ratings.service.ts
     ├── romms.service.spec.ts
-    └── dto/
-        └── create-ratings.dto.ts
-        └── update-ratings.dto.ts
+    ├── dto/
+    │   ├── create-ratings.dto.ts
+    │   └── update-ratings.dto.ts
     └── entities/
         └── ratings.entity.ts
 ```
@@ -242,18 +250,10 @@ npm run test:e2e
 
 Pour signaler une vulnérabilité, utiliser le mécanisme de signalement privé du dépôt plutôt qu’une issue publique.
 
-## Feuille de route
-
-- validation structurée des données reçues;
-- persistance dans une base de données;
-- documentation OpenAPI;
-- versionnement explicite de l’API;
-- authentification et autorisation;
-- observabilité et déploiement automatisé.
-
 ## Documentation
 
 - [IAGraphie](docs/IAGraphie.docx)
+- [Postman](docs/Test_Postman.md)
 
 ## Licence
 
