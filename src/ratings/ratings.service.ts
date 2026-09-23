@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { RatingsCreateDto } from './dto/create-ratings.dto.js';
 import { RatingsUpdateDto } from './dto/update-ratings.dto.js';
 import { RatingsResponseDto } from './dto/response-ratings.dto.js';
@@ -56,7 +56,7 @@ export class RatingsService {
             if (error instanceof NotFoundException) {
                 throw error;
             }
-            throw new InternalServerErrorException('Failed to find rating.');
+            throw error;
         }
     }
 
@@ -94,7 +94,7 @@ export class RatingsService {
                 createdAt: new Date().toISOString()
             };
         } catch (error) {
-            throw new InternalServerErrorException('Failed to create rating.');
+            throw error;
         }
     }
 
@@ -120,7 +120,7 @@ export class RatingsService {
         try {
             fs.writeFileSync(this.path, JSON.stringify({ ratings: updatedRepo }, null, 2), 'utf8');
         } catch (error) {
-            throw new InternalServerErrorException('Failed to update rating.');
+            throw error;
         }
 
         return {
@@ -137,12 +137,28 @@ export class RatingsService {
         this.findOne(id);
 
         const repo = this.findAll();
+        const repoLocations = this.serviceLocations.findAll();
+        const location = repoLocations.find((item) => String(item._id) === this.findOne(id).placeId);
+
+        if (location == null || undefined) {
+            throw new NotFoundException(`No location with "${id}" exists.`);
+        }
+
+        if (location.reviewCount > 0) {
+            location.reviewCount -= 1;
+            if (location.reviewCount == 0) {
+                location.averageRating = null;
+            }
+        }
+
         const newRepo = repo.filter((item) => String(item._id) !== id);
+
 
         try {
             fs.writeFileSync(this.path, JSON.stringify({ ratings: newRepo }, null, 2), 'utf8');
+            fs.writeFileSync(this.serviceLocations.path, JSON.stringify({ locations: repoLocations }, null, 2), 'utf8');
         } catch (error) {
-            throw new InternalServerErrorException('Failed to remove rating.');
+            throw error;
         }
 
         return { code: 204 };
