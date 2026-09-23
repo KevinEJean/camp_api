@@ -1,6 +1,3 @@
-import { Category } from "../enums/category.enum.js";
-import { Status } from "../enums/status.enum.js";
-
 export class LocationsResponseDto {
     code!: number;
     name?: string;
