@@ -10,7 +10,7 @@ API REST de gestion de données et services lié au campus.
 
 - vérification de l’état du service;
 - gestion des locations;
-- gestion d'erreures globale
+- gestion d'erreurs globale
 - réponses HTTP au format JSON;
 - architecture modulaire par domaine;
 - contrôles de qualité avec ESLint et Prettier.
@@ -112,14 +112,28 @@ Toutes les routes sont exposées sous le préfixe global `/api/v1`.
 
 Consulter la [collection Postman](docs/Test_Postman.md) pour une liste des routes à tester.
 
+### Locations
+
 | Méthode | Route | Statut attendu | Description |
 |---|---|---:|---|
 | `GET` | `/api/v1/health` | `200 OK` | Vérifie l’état du service |
 | `GET` | `/api/v1/locations` | `200 OK` | Retourne les locations |
-| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une locations |
+| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une location |
 | `POST` | `/api/v1/locations` | `201 Created` | Crée une location |
 | `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie une location |
-| `DELETE` | `/api/v1/locations/{id}` | `204 OK` | Supprime une location |
+| `DELETE` | `/api/v1/locations/{id}` | `204 No Content` | Supprime une location |
+
+### Ratings
+
+| Méthode | Route | Statut attendu | Description |
+|---|---|---:|---|
+| `GET` | `/api/v1/health` | `200 OK` | Vérifie l’état du service |
+| `GET` | `/api/v1/locations` | `200 OK` | Retourne les locations |
+| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une location |
+| `POST` | `/api/v1/locations` | `201 Created` | Crée une location |
+| `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie une location |
+| `DELETE` | `/api/v1/locations/{id}` | `204 No Content` | Supprime une location |
+
 
 ### Vérifier l’état du service
 
@@ -165,10 +179,8 @@ La base de données persiste après réinitialisation. Au cas où le fichier (ou
 
 ```text
 src/
-├── app.controller.spec.ts
 ├── app.controller.ts
 ├── app.module.ts
-├── app.service.spec.ts
 ├── app.service.ts
 ├── main.ts
 ├── util/
@@ -178,15 +190,12 @@ src/
 ├── data/
 │   └── database.json
 ├── health/
-│   ├── health.controller.spec.ts
 │   ├── health.controller.ts
 │   └── health.module.ts
 ├── locations/
 │   ├── locations.module.ts
 │   ├── locations.controller.ts
-│   ├── locations.controller.spec.ts
 │   ├── locations.service.ts
-│   ├── locations.service.spec.ts
 │   ├── dto/
 │   │   ├── create-locations.dto.ts
 │   │   ├── response-locations.dto.ts
@@ -206,9 +215,7 @@ src/
 └── ratings/
     ├── ratings.module.ts
     ├── ratings.controller.ts
-    ├── ratings.controller.spec.ts
     ├── ratings.service.ts
-    ├── romms.service.spec.ts
     ├── dto/
     │   ├── create-ratings.dto.ts
     │   └── update-ratings.dto.ts
