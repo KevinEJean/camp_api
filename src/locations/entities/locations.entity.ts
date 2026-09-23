@@ -1,4 +1,4 @@
-import { IsArray, IsDate, IsNotEmpty, IsNumber, IsString, Matches } from 'class-validator';
+import { IsArray, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, Matches } from 'class-validator';
 import { Status } from '../enums/status.enum.js';
 import { Category } from '../enums/category.enum.js';
 import { Util } from '../../util/utils.js';
@@ -26,10 +26,12 @@ export class Locations {
     @IsNotEmpty()
     address!: string;
 
+    @IsOptional()
     @IsArray()
     @IsString({ each: true })
     services?: string[] = [];
 
+    @IsOptional()
     @IsString()
     status?: Status = Status.ACTIVE;
 

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { LocationsCreateDto } from './dto/create-locations.dto.js';
 import { LocationsUpdateDto } from './dto/update-locations.dto.js';
 import { LocationsResponseDto } from './dto/response-locations.dto.js';
@@ -54,7 +54,7 @@ export class LocationsService {
                 updatedAt: updatedAtDate.toISOString()
             }
         } catch (error) {
-            throw new InternalServerErrorException(error);
+            throw error;
         }
     }
 
@@ -79,7 +79,7 @@ export class LocationsService {
             repo.push(newLocations);
             fs.writeFileSync(this.path, JSON.stringify({ locations: repo }, null, 2), 'utf8');
         } catch (error) {
-            throw new InternalServerErrorException(error);
+            throw error;
         }
         return {
             code: 201,
@@ -109,7 +109,7 @@ export class LocationsService {
         try {
             fs.writeFileSync(this.path, JSON.stringify({ locations: updatedRepo }, null, 2), 'utf8');
         } catch (error) {
-            throw new InternalServerErrorException(error);
+            throw error;
         }
 
         return {
@@ -128,12 +128,19 @@ export class LocationsService {
         this.findOne(id);
 
         const repo = this.findAll();
+        const tempRepo = repo;
+        const test = tempRepo.filter((item) => String(item._id) === id);
+
+        if (test[0].reviewCount > 0) {
+            throw new BadRequestException('Not allowed to delete a location with active ratings!');
+        }
+
         const newRepo = repo.filter((item) => String(item._id) !== id);
 
         try {
             fs.writeFileSync(this.path, JSON.stringify({ locations: newRepo }, null, 2), 'utf8');
         } catch (error) {
-            throw new InternalServerErrorException(error);
+            throw error;
         }
 
         return { code: 204 };

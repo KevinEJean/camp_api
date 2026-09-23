@@ -4,11 +4,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 export function configureSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
     .setTitle('Campus API')
-    .setDescription('API REST de gestion de données pour des locations et revue de camping.')
+    .setDescription('API RESTful de gestion de données pour des emplacements et ses revues.')
     .setVersion('1.0.0')
-    .addTag('Locations', 'Gestion des emplacements')
-    .addTag('Ratng', 'Gestion des appréciations')
     .addTag('Health', 'État du service')
+    .addTag('Locations', 'Gestion des emplacements')
+    .addTag('Ratings', 'Gestion des appréciations')
     .build();
 
   const documentFactory = () =>
