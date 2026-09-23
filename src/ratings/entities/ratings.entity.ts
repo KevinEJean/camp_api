@@ -1,4 +1,4 @@
-import { IsArray, IsDate, IsNotEmpty, IsNumber, IsString, Matches } from 'class-validator';
+import { Max, IsDate, IsNotEmpty, IsNumber, IsString, Matches, Min } from 'class-validator';
 import { Locations } from "../../locations/entities/locations.entity.js";
 import { Util } from "../../util/utils.js";
 
@@ -20,6 +20,8 @@ export class Ratings {
 
     @IsNumber()
     @IsNotEmpty()
+    @Min(0)
+    @Max(10)
     rating!: number;
 
     @IsString()
