@@ -43,6 +43,7 @@ export class RatingsService {
             const createdAtDate = rating.createdAt ? new Date(rating.createdAt) : new Date();
             const updatedAtDate = rating.updatedAt ? new Date(rating.updatedAt) : new Date();
 
+
             return {
                 code: 200,
                 placeId: rating.placeId,
@@ -77,8 +78,9 @@ export class RatingsService {
             dto.comment
         );
 
+        repo.push(newRating);
+
         try {
-            repo.push(newRating);
             fs.writeFileSync(this.path, JSON.stringify({ ratings: repo }, null, 2), 'utf8');
 
             const ratings = repo.filter((item) => item.placeId === location._id);
@@ -88,14 +90,14 @@ export class RatingsService {
             location.averageRating = Number((sum / ratings.length).toFixed(2));
 
             fs.writeFileSync(this.serviceLocations.path, JSON.stringify({ locations: repoLocations }, null, 2), 'utf8');
-
-            return {
-                code: 201,
-                createdAt: new Date().toISOString()
-            };
         } catch (error) {
             throw error;
         }
+
+        return {
+            code: 201,
+            createdAt: new Date().toISOString()
+        };
     }
 
     update(id: string, dto: RatingsUpdateDto): RatingsResponseDto {

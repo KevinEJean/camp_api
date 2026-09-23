@@ -12,10 +12,10 @@
         "Salles d'étude"
       ],
       "status": "ACTIVE",
-      "averageRating": null,
-      "reviewCount": 0,
-      "createdAt": "2026-09-23T02:40:36.956Z",
-      "updatedAt": "2026-09-23T02:40:36.956Z"
+      "averageRating": 7.4,
+      "reviewCount": 5,
+      "createdAt": "2026-09-22T21:24:59.701Z",
+      "updatedAt": "2026-09-22T21:24:59.701Z"
     }
   ]
 }

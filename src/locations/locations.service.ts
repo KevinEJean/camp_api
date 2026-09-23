@@ -77,15 +77,14 @@ export class LocationsService {
 
         try {
             repo.push(newLocations);
-            fs.writeFileSync(this.path, JSON.stringify({locations: repo}, null, 2), 'utf8');
-
-            return {
-                code: 201,
-                createdAt: new Date().toISOString()
-            };
+            fs.writeFileSync(this.path, JSON.stringify({ locations: repo }, null, 2), 'utf8');
         } catch (error) {
             throw error;
         }
+        return {
+            code: 201,
+            createdAt: new Date().toISOString()
+        };
     }
 
     update(id: string, dto: LocationsUpdateDto): LocationsResponseDto {
@@ -108,7 +107,7 @@ export class LocationsService {
         updatedRepo[targetIndex] = updatedLocation;
 
         try {
-            fs.writeFileSync(this.path, JSON.stringify({locations: updatedRepo}, null, 2), 'utf8');
+            fs.writeFileSync(this.path, JSON.stringify({ locations: updatedRepo }, null, 2), 'utf8');
         } catch (error) {
             throw error;
         }
@@ -139,7 +138,7 @@ export class LocationsService {
         const newRepo = repo.filter((item) => String(item._id) !== id);
 
         try {
-            fs.writeFileSync(this.path, JSON.stringify({locations: newRepo}, null, 2), 'utf8');
+            fs.writeFileSync(this.path, JSON.stringify({ locations: newRepo }, null, 2), 'utf8');
         } catch (error) {
             throw error;
         }
