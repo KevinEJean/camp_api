@@ -235,24 +235,13 @@ Le projet suit une organisation par fonctionnalité :
 | `npm run test:e2e` | Exécute les tests de bout en bout |
 | `npm run test:cov` | Produit le rapport de couverture des tests |
 
-## Qualité du code
-
-Avant de soumettre une pull request, exécuter :
-
-```bash
-npm run build
-npm run lint
-npm run test
-npm run test:e2e
-```
-
 ## Sécurité
 
 Pour signaler une vulnérabilité, utiliser le mécanisme de signalement privé du dépôt plutôt qu’une issue publique.
 
 ## Documentation
 
-- [IAGraphie](docs/IAGraphie.docx)
+- [IAGraphie](docs/IAGraphie.pdf)
 - [Postman](docs/Test_Postman.md)
 
 ## Licence
