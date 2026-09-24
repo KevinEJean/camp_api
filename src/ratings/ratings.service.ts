@@ -108,6 +108,15 @@ export class RatingsService {
             throw new NotFoundException(`Rating with ID "${id}" not found.`);
         }
 
+        /* 
+        
+        Integartion IA
+        
+        Remplacer :
+        oldRating.rating == dto.rating,
+        oldRating.comment == dto.comment
+
+        Avec :*/
         const updatedRating: Ratings = {
             ...repo[targetIndex],
             ...Object.fromEntries(

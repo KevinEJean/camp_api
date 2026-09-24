@@ -95,6 +95,18 @@ export class LocationsService {
             throw new NotFoundException(`Location with ID "${id}" not found.`);
         }
 
+        /* 
+        
+        Integartion IA
+        
+        Remplacer :
+        oldLocation.name == dto.name,
+        oldLocation.description == dto.description,
+        oldLocation.category == dto.category,
+        oldLocation.address == dto.address
+        ...
+
+        Avec :*/
         const updatedLocation: Locations = {
             ...repo[targetIndex],
             ...Object.fromEntries(
