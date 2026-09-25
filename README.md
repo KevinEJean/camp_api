@@ -176,15 +176,14 @@ src/
 ├── config/
 │   └── db.config.ts
 ├── data/
-│   └── database.json
+│   └── databaseLocations.json
+│   └── databaseRatings.json
 ├── health/
-│   ├── health.controller.spec.ts
 │   ├── health.controller.ts
 │   └── health.module.ts
 ├── locations/
 │   ├── locations.module.ts
 │   ├── locations.controller.ts
-│   ├── locations.controller.spec.ts
 │   ├── locations.service.ts
 │   ├── locations.service.spec.ts
 │   ├── dto/
@@ -206,7 +205,6 @@ src/
 └── ratings/
     ├── ratings.module.ts
     ├── ratings.controller.ts
-    ├── ratings.controller.spec.ts
     ├── ratings.service.ts
     ├── romms.service.spec.ts
     ├── dto/
@@ -221,7 +219,7 @@ Le projet suit une organisation par fonctionnalité :
 - les modules regroupent les composants d’un domaine;
 - les contrôleurs gèrent les échanges HTTP;
 - les services portent la logique applicative;
-- les DTO définissent la forme des données échangées.
+- les DTO définissent la forme des données échangées;
 
 ## Scripts disponibles
 
