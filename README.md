@@ -110,7 +110,7 @@ http://localhost:3000/api/v1
 
 Toutes les routes sont exposées sous le préfixe global `/api/v1`.
 
-Consulter la [collection Postman](docs/Test_Postman.md) pour une liste des routes à tester.
+Consulter la [collection Postman](docs/Test_Postman.md) pour une liste technique de toutes les routes.
 
 | Méthode | Route | Statut attendu | Description |
 |---|---|---:|---|
@@ -119,7 +119,12 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste des route
 | `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une locations |
 | `POST` | `/api/v1/locations` | `201 Created` | Crée une location |
 | `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie une location |
-| `DELETE` | `/api/v1/locations/{id}` | `204 OK` | Supprime une location |
+| `DELETE` | `/api/v1/locations/{id}` | `204 No Content` | Supprime une location |
+| `GET` | `/api/v1/ratings` | `200 OK` | Retourne les ratings |
+| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne un ratings |
+| `POST` | `/api/v1/locations` | `201 Created` | Crée un ratings |
+| `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie un ratings |
+| `DELETE` | `/api/v1/locations/{id}` | `204 No Content` | Supprime un ratings |
 
 ### Vérifier l’état du service
 
