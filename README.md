@@ -121,10 +121,10 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste technique
 | `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie une location |
 | `DELETE` | `/api/v1/locations/{id}` | `204 No Content` | Supprime une location |
 | `GET` | `/api/v1/ratings` | `200 OK` | Retourne les ratings |
-| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne un ratings |
-| `POST` | `/api/v1/locations` | `201 Created` | Crée un ratings |
-| `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie un ratings |
-| `DELETE` | `/api/v1/locations/{id}` | `204 No Content` | Supprime un ratings |
+| `GET` | `/api/v1/ratings/{id}` | `200 OK` | Retourne un ratings |
+| `POST` | `/api/v1/ratings` | `201 Created` | Crée un ratings |
+| `PATCH` | `/api/v1/ratings/{id}` | `200 OK` | Modifie un ratings |
+| `DELETE` | `/api/v1/ratings/{id}` | `204 No Content` | Supprime un ratings |
 
 ### Vérifier l’état du service
 
