@@ -112,14 +112,26 @@ Toutes les routes sont exposées sous le préfixe global `/api/v1`.
 
 Consulter la [collection Postman](docs/Test_Postman.md) pour une liste technique de toutes les routes.
 
+### Health
+
 | Méthode | Route | Statut attendu | Description |
 |---|---|---:|---|
 | `GET` | `/api/v1/health` | `200 OK` | Vérifie l’état du service |
+
+### Locations
+
+| Méthode | Route | Statut attendu | Description |
+|---|---|---:|---|
 | `GET` | `/api/v1/locations` | `200 OK` | Retourne les locations |
 | `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une locations |
 | `POST` | `/api/v1/locations` | `201 Created` | Crée une location |
 | `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie une location |
 | `DELETE` | `/api/v1/locations/{id}` | `204 No Content` | Supprime une location |
+
+### Ratings
+
+| Méthode | Route | Statut attendu | Description |
+|---|---|---:|---|
 | `GET` | `/api/v1/ratings` | `200 OK` | Retourne les ratings |
 | `GET` | `/api/v1/ratings/{id}` | `200 OK` | Retourne un ratings |
 | `POST` | `/api/v1/ratings` | `201 Created` | Crée un ratings |
