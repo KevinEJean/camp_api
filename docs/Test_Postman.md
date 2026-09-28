@@ -8,15 +8,23 @@
 GET http://localhost:3000/api/v1/health
 ```
 
+---
+
 ## Locations
 
 ```bash
 GET http://localhost:3000/api/v1/locations
 ```
 
+![](images/location/GET.jpeg)
+---
+
 ```bash
 GET http://localhost:3000/api/v1/locations/{idLocation}
 ```
+
+![](images/location/GET_ONE.jpeg)
+---
 
 ```bash
 POST http://localhost:3000/api/v1/locations
@@ -35,6 +43,11 @@ Body :
 }
 ```
 
+![](images/location/POST.jpeg)
+![](images/location/POST_ERR.jpeg)
+![](images/location/POST2.jpeg)
+---
+
 ```bash
 PATCH http://localhost:3000/api/v1/locations/{idLocation}
 Body :
@@ -43,9 +56,18 @@ Body :
 }
 ```
 
+![](images/location/PATCH.jpeg)
+---
+
 ```bash
 DELETE http://localhost:3000/api/v1/locations/{idLocation}
 ```
+
+![](images/location/DELETE.jpeg)
+![](images/location/DELETE_ERR.jpeg)
+---
+
+---
 
 ## Ratings
 
@@ -53,29 +75,42 @@ DELETE http://localhost:3000/api/v1/locations/{idLocation}
 GET http://localhost:3000/api/v1/ratings
 ```
 
+![](images/rating/GET.jpeg)
+---
+
 ```bash
 GET http://localhost:3000/api/v1/ratings/{idRating}
 ```
+
+![](images/rating/GET_ONE.jpeg)
+---
 
 ```bash
 POST http://localhost:3000/api/v1/ratings
 Body :
 {
   "placeId": "{idLocation}",
-  "authorName": "Anonymous",
+  "authorName": "Polo Marko",
   "rating": 10,
-  "comment": "Emplacement parfait!"
+  "comment": "Excellente ambiance, je suis un grand fan!"
 }
 ```
+
+![](images/rating/POST.jpeg)
+![](images/rating/PROOF_ReviewCount.jpeg)
+---
 
 ```bash
 PATCH http://localhost:3000/api/v1/ratings/{idRating}
 Body :
 {
-  "rating": 2,
-  "comment": "Emplacement terrible..."
+  "rating": 8
 }
 ```
+
+![](images/rating/PATCH.jpeg)
+![](images/rating/PATCH_ERR.jpeg)
+---
 
 ```bash
 DELETE http://localhost:3000/api/v1/ratings/{idRating}
