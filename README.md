@@ -193,13 +193,17 @@ src/
 ├── config/
 │   └── db.config.ts
 ├── data/
-│   └── databaseLocations.json
+│   ├── databaseLocations.json
 │   └── databaseRatings.json
 ├── exception/
 │   ├── exception.dto.ts
-│   └── filters/
-│       ├── http-exception.filters.ts
-│       └── other-exception.filters.ts
+│   ├── filters/
+│   │   ├── http-exception.filters.ts
+│   │   └── other-exception.filters.ts
+│   ├── interceptors/
+│   │   └── execution-time.interceptor.ts
+│   └── middleware/
+│       └── request-logger.middleware.ts
 ├── health/
 │   ├── health.controller.ts
 │   └── health.module.ts
