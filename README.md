@@ -191,6 +191,8 @@ src/
 ├── util/
 │   └── util.ts
 ├── config/
+│   ├── configure-swagger.ts
+│   ├── configure-winston.ts
 │   └── db.config.ts
 ├── data/
 │   ├── databaseLocations.json
