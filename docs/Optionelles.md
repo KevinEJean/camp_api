@@ -9,5 +9,5 @@
 - Anything I have time for.
 
 ## Done : 
-- L1 (3)
-- H4 (2)
+- L1 (3, enough?)
+- H4 (2, enough?)
