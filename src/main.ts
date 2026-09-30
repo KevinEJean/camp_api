@@ -1,16 +1,51 @@
 import { NestFactory } from '@nestjs/core';
-import { VersioningType } from '@nestjs/common';
-import { configureSwagger } from './configure-swagger.js';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { configureSwagger } from './config/configure-swagger.js';
 import { AppModule } from './app.module.js';
+import { HttpExceptionFilter } from './exception/filters/http-exception.filter.js';
+import { ExecutionTimeInterceptor } from './exception/interceptors/execution-time.interceptor.js';
+import { configureWinston } from './config/configure-winston.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const port = Number(process.env.PORT);
+
+  if (
+    !Number.isInteger(port) ||
+    port <= 0 ||
+    port > 65535
+  ) {
+    throw new Error(
+      `La variable PORT doit contenir un port valide. Invalide => (${process.env.PORT})`,
+    );
+  }
+  
   app.setGlobalPrefix('api');
+  
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
   });
+  
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+  
+  app.useGlobalInterceptors(
+    new ExecutionTimeInterceptor()
+  );
+  
+  app.useGlobalFilters(
+    new HttpExceptionFilter()
+  );
+
+  configureWinston(app);
   configureSwagger(app);
-  await app.listen(process.env.PORT ?? 3000);
+
+  await app.listen(port);
 }
 bootstrap();
