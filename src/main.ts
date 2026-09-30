@@ -5,11 +5,13 @@ import { AppModule } from './app.module.js';
 import { HttpExceptionFilter } from './exception/filters/http-exception.filter.js';
 import { ExecutionTimeInterceptor } from './exception/interceptors/execution-time.interceptor.js';
 import { configureWinston } from './config/configure-winston.js';
+import helmet from "helmet";
 
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const allowedOrigins = [`http://localhost:${process.env.PORT}`];
+  app.use(helmet());
   app.enableCors({
     origin: (origin: any, callback: any) => {
       if (!origin || allowedOrigins.includes(origin)) {
