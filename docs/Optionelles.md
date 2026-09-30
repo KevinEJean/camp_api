@@ -1,7 +1,7 @@
 # Fonctionnalités optionelles
 
 ## To do :
-- M1, M2, M3 (10)
+- T1, T2, T3, T4 (10)
 - A2 (5)
 - L2 (3)
 - P2 (2, locations / documenter)
