@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 import { Category } from '../enums/category.enum.js';
 import { Status } from '../enums/status.enum.js';
 
-@Schema()
+@Schema({ timestamps: true })
 export class Location extends Document {
     @Prop({ required: true, unique: true })
     name!: string;
@@ -16,14 +17,14 @@ export class Location extends Document {
     @Prop({ required: true })
     address!: string;
 
-    @Prop({ required: false })
-    services?: string[] = [];
+    @Prop({ required: false, default: [] })
+    services?: string[];
 
-    @Prop({ required: false })
-    status?: Status = Status.ACTIVE;
+    @Prop({ required: false, default: Status.ACTIVE })
+    status?: Status;
 
-    @Prop({ required: true })
-    averageRating: number | null;
+    @Prop({ default: null })
+    averageRating: number;
 
     @Prop({ default: 0 })
     reviewCount: number;

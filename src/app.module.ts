@@ -11,7 +11,7 @@ import { RatingsModule } from './ratings/ratings.module.js';
     HealthModule,
     LocationsModule,
     RatingsModule,
-    MongooseModule.forRoot(`${process.env.MONGODB_URL}`),
+    MongooseModule.forRoot(`mongodb+srv://kevinjean438_db_user:KIQT0Zr6I67vLEU0@cluster-dev.xtn05en.mongodb.net/?appName=Cluster-dev`), // to change process.env.MONGODB_URI
   ],
   controllers: [AppController],
   providers: [AppService],

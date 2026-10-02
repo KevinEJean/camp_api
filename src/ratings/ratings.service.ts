@@ -1,17 +1,21 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import DatabaseGenerator from '../config/db.config.js';
 import { RatingsCreateDto } from './dto/create-ratings.dto.js';
 import { RatingsUpdateDto } from './dto/update-ratings.dto.js';
 import { RatingsResponseDto } from './dto/response-ratings.dto.js';
 import { Ratings } from './entities/ratings.entity.js';
-import DatabaseGenerator from '../config/db.config.js';
+import { Rating } from './schemas/ratings.schema.js';
+import Util from '../util/utils.js';
 import * as fs from 'fs';
-import { LocationsService } from '../locations/locations.service.js';
 
 @Injectable()
 export class RatingsService {
 
     private readonly path = new DatabaseGenerator().pathRatings;
-    private readonly serviceLocations = new LocationsService();
+    private readonly pathLocations = new DatabaseGenerator().pathLocations;
+    private findAllLocations = new Util().findAllLocations(this.pathLocations);
 
     constructor() {
         if (!fs.existsSync(this.path)) {
@@ -63,7 +67,7 @@ export class RatingsService {
 
     create(dto: RatingsCreateDto): RatingsResponseDto {
         const repo = this.findAll();
-        const repoLocations = this.serviceLocations.findAll();
+        const repoLocations = this.findAllLocations;
 
         const location = repoLocations.find((item) => item._id === dto.placeId);
 
@@ -89,7 +93,7 @@ export class RatingsService {
             location.reviewCount = ratings.length;
             location.averageRating = Number((sum / ratings.length).toFixed(2));
 
-            fs.writeFileSync(this.serviceLocations.path, JSON.stringify({ locations: repoLocations }, null, 2), 'utf8');
+            fs.writeFileSync(this.pathLocations, JSON.stringify({ locations: repoLocations }, null, 2), 'utf8');
         } catch (error) {
             throw error;
         }
@@ -148,7 +152,7 @@ export class RatingsService {
         this.findOne(id);
 
         const repo = this.findAll();
-        const repoLocations = this.serviceLocations.findAll();
+        const repoLocations = this.findAllLocations;
         const location = repoLocations.find((item) => String(item._id) === this.findOne(id).placeId);
 
         if (location == null || undefined) {
@@ -167,7 +171,7 @@ export class RatingsService {
 
         try {
             fs.writeFileSync(this.path, JSON.stringify({ ratings: newRepo }, null, 2), 'utf8');
-            fs.writeFileSync(this.serviceLocations.path, JSON.stringify({ locations: repoLocations }, null, 2), 'utf8');
+            fs.writeFileSync(this.pathLocations, JSON.stringify({ locations: repoLocations }, null, 2), 'utf8');
         } catch (error) {
             throw error;
         }
