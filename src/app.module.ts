@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { HealthModule } from './health/health.module.js';
@@ -10,6 +11,7 @@ import { RatingsModule } from './ratings/ratings.module.js';
     HealthModule,
     LocationsModule,
     RatingsModule,
+    MongooseModule.forRoot(`${process.env.MONGODB_URL}`),
   ],
   controllers: [AppController],
   providers: [AppService],
