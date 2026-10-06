@@ -1,19 +1,36 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller.js';
-import { AppService } from './app.service.js';
+import databaseConfig from './config/database.config.js';
 import { HealthModule } from './health/health.module.js';
 import { LocationsModule } from './locations/locations.module.js';
 import { RatingsModule } from './ratings/ratings.module.js';
+import Joi from 'joi';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.dev',
+      load: [databaseConfig],
+      validationSchema: Joi.object({
+        MONGO_URI: Joi.string().required(),
+        PORT: Joi.number().default(3000),
+      }),
+    }),
+
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGO_URI'),
+        autoIndex: process.env.NODE_ENV !== 'production',
+      }),
+    }),
+
     HealthModule,
     LocationsModule,
     RatingsModule,
-    MongooseModule.forRoot(""),
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+  ]
 })
-export class AppModule {}
+export class AppModule { }

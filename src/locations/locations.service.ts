@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import DatabaseGenerator from '../config/db.config.js';
 import { LocationsUpdateDto } from './dto/update-locations.dto.js';
 import { LocationsResponseDto } from './dto/response-locations.dto.js';
+import { LocationsRepository } from './locations.repository.js';
 import { Locations } from './entities/locations.entity.js';
 import { Location } from './schemas/locations.schema.js';
 import * as fs from 'fs';
@@ -13,31 +14,29 @@ export class LocationsService {
 
     public readonly path = new DatabaseGenerator().pathLocations;
 
-    constructor(@InjectModel(Location.name) private readonly locationModel: Model<Location>) {
+    constructor(@InjectModel(Location.name) private readonly locationModel: Model<Location>, private readonly repository: LocationsRepository) {
         if (!fs.existsSync(this.path)) {
             new DatabaseGenerator().setup();
         }
     }
 
     async findAll(): Promise<Location[]> {
-        return this.locationModel.find().exec();
+        return this.repository.findAll();
     }
 
     async findOne(id: string): Promise<Location> {
-        const location = await this.locationModel.aggregate([
-            { $match: { _id: id } }
-        ]);
+        const location = await this.repository.findById(id);
 
-        if (location.length < 0) {
-            throw new NotFoundException(`Location with ID "${id}" not found.`);
+        if (!location) {
+            throw new NotFoundException(`Location with ID ("${id}") not found.`);
         }
 
-        return location[0];
+        return location;
     }
 
     async create(location: Partial<Location>): Promise<Location> {
-        if (!location.name || !location.description || !location.category || !location.address) {
-            throw new BadRequestException("Rquest is missing at least one of these values : name / description / category / address)");
+        if (!location?.name || !location?.description || !location?.category || !location?.address) {
+            throw new BadRequestException("Request is missing at least one of these values : name / description / category / address)");
         }
 
         const newLocation = new Locations(
@@ -49,41 +48,43 @@ export class LocationsService {
             location.status,
         );
 
-        const createdLocation = new this.locationModel(newLocation);
-        return await createdLocation.save();
+        const createdLocation: Partial<Location> = {
+            _id: newLocation._id,
+            name: newLocation.name,
+            description: newLocation.description,
+            category: newLocation.category,
+            address: newLocation.address,
+            services: newLocation.services,
+            status: newLocation.status,
+        };
+
+        return await this.repository.create(createdLocation);
     }
 
     async update(id: string, dto: Partial<LocationsUpdateDto>): Promise<Location> {
-        const location = this.findOne(id);
-
-        const name = dto?.name || (await location).name;
-        const description = dto?.description || (await location).description;
-        const category = dto?.category || (await location).category;
-        const address = dto?.address || (await location).address;
-        const services = dto?.services || (await location).services;
-        const status = dto?.status || (await location).status;
-
-        await this.locationModel.updateOne(
-            { id: id },
+        const updateDocument = await this.locationModel.updateOne(
+            {$match: { _id: id} },
             [
-                { $set: { name: name } },
-                { $set: { description: description } },
-                { $set: { category: category } },
-                { $set: { address: address } },
-                { $set: { services: services } },
-                { $set: { status: status } }
+                { $set: { name: dto.name } },
+                { $set: { name: dto.description } },
+                { $set: { name: dto.category } },
+                { $set: { name: dto.address } },
+                { $set: { name: dto.services } },
+                { $set: { name: dto.status } },
             ],
-            { updatePipeline: true }
-        )
+            {updatePipeline: true}
+        );
 
-        return await this.findOne(id);
+        if (updateDocument.modifiedCount < 1) {
+            throw new NotFoundException(`Location with ID ("${id}") not found.`);
+        }
+
+        return this.findOne(id);
     }
 
     async remove(id: string): Promise<LocationsResponseDto> {
-        await this.locationModel.deleteOne([
-            {$match: { _id: id } }
-        ]);
-
+        await this.findOne(id);
+        await this.repository.deleteById(id);
         return { code: 204 }
     }
 }
