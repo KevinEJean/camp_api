@@ -20,74 +20,70 @@ export class LocationsService {
     }
 
     async findAll(): Promise<Location[]> {
-        try {
-            return this.locationModel.find().exec();
-        } catch (error) {
-            console.error(error);
-            return [];
-        }
+        return this.locationModel.find().exec();
     }
 
     async findOne(id: string): Promise<Location> {
-        try {
-            const location = await this.locationModel.findById(id).exec();
+        const location = await this.locationModel.aggregate([
+            { $match: { _id: id } }
+        ]);
 
-            if (!location) {
-                throw new NotFoundException(`Location with ID "${id}" not found.`);
-            }
-
-            return location;
-        } catch (error) {
-            throw error;
+        if (location.length < 0) {
+            throw new NotFoundException(`Location with ID "${id}" not found.`);
         }
+
+        return location[0];
     }
 
     async create(location: Partial<Location>): Promise<Location> {
         if (!location.name || !location.description || !location.category || !location.address) {
             throw new BadRequestException("Rquest is missing at least one of these values : name / description / category / address)");
         }
-        try {
-            const newLocation = new Locations(
-                location.name,
-                location.description,
-                location.category,
-                location.address,
-                location.services,
-                location.status,
-            );
-            const createdLocation = new this.locationModel(newLocation);
-            return await createdLocation.save();
-        } catch (error) {
-            throw error;
-        }
+
+        const newLocation = new Locations(
+            location.name,
+            location.description,
+            location.category,
+            location.address,
+            location.services,
+            location.status,
+        );
+
+        const createdLocation = new this.locationModel(newLocation);
+        return await createdLocation.save();
     }
 
-    async update(id: string, dto: LocationsUpdateDto): Promise<Location> {
-        try {
-            const location = await this.locationModel.findByIdAndUpdate({"_id": id}, Array.of(dto));
+    async update(id: string, dto: Partial<LocationsUpdateDto>): Promise<Location> {
+        const location = this.findOne(id);
 
-            if (!location) {
-                throw new NotFoundException(`Location with ID "${id}" not found.`);
-            }
+        const name = dto?.name || (await location).name;
+        const description = dto?.description || (await location).description;
+        const category = dto?.category || (await location).category;
+        const address = dto?.address || (await location).address;
+        const services = dto?.services || (await location).services;
+        const status = dto?.status || (await location).status;
 
-            const newLocation = await this.locationModel.findById(id).exec();
+        await this.locationModel.updateOne(
+            { id: id },
+            [
+                { $set: { name: name } },
+                { $set: { description: description } },
+                { $set: { category: category } },
+                { $set: { address: address } },
+                { $set: { services: services } },
+                { $set: { status: status } }
+            ],
+            { updatePipeline: true }
+        )
 
-            if (!newLocation) {
-                throw new InternalServerErrorException('Error while attempting to find the location.');
-            }
-
-            return newLocation;
-        } catch (error) {
-            throw error;
-        }
+        return await this.findOne(id);
     }
 
-    remove(id: string): LocationsResponseDto {
-        try {
-            this.locationModel.findOneAndDelete({"_id": id});
-            return { code: 204 }
-        } catch (error) {
-            throw error;
-        }
+    async remove(id: string): Promise<LocationsResponseDto> {
+        await this.locationModel.deleteOne([
+            {$match: { _id: id } }
+        ]);
+
+        return { code: 204 }
     }
 }

@@ -116,7 +116,7 @@ export class LocationsController {
         status: 404, 
         description: 'Emplacement non trouvé.'
     })
-    remove(@Param('id') id: string): LocationsResponseDto {
+    remove(@Param('id') id: string): Promise<LocationsResponseDto> {
         return this.service.remove(id);
     }
 }
