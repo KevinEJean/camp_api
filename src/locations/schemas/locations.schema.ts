@@ -1,10 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import { Category } from '../enums/category.enum.js';
 import { Status } from '../enums/status.enum.js';
 
+export type LocationDocument = HydratedDocument<Location>;
+
 @Schema({ timestamps: true })
-export class Location extends Document {
+export class Location {
+
+    @Prop({ type: String, required: true })
+    _id!: string;
+
     @Prop({ required: true, unique: true })
     name!: string;
 
@@ -28,12 +34,6 @@ export class Location extends Document {
 
     @Prop({ default: 0 })
     reviewCount: number;
-
-    @Prop({ default: Date.now() })
-    createdAt: Date;
-
-    @Prop({ default: Date.now() })
-    updatedAt: Date;
 }
 
 export const LocationSchema = SchemaFactory.createForClass(Location);

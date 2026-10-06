@@ -1,9 +1,10 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import DatabaseGenerator from '../config/db.config.js';
 import { LocationsUpdateDto } from './dto/update-locations.dto.js';
 import { LocationsResponseDto } from './dto/response-locations.dto.js';
+import { Locations } from './entities/locations.entity.js';
 import { Location } from './schemas/locations.schema.js';
 import * as fs from 'fs';
 
@@ -42,8 +43,20 @@ export class LocationsService {
     }
 
     async create(location: Partial<Location>): Promise<Location> {
+        if (!location.name || !location.description || !location.category || !location.address) {
+            throw new BadRequestException("Rquest is missing at least one of these values : name / description / category / address)");
+        }
         try {
-            return this.locationModel.create(location);
+            const newLocation = new Locations(
+                location.name,
+                location.description,
+                location.category,
+                location.address,
+                location.services,
+                location.status,
+            );
+            const createdLocation = new this.locationModel(newLocation);
+            return await createdLocation.save();
         } catch (error) {
             throw error;
         }
@@ -72,7 +85,6 @@ export class LocationsService {
     remove(id: string): LocationsResponseDto {
         try {
             this.locationModel.findOneAndDelete({"_id": id});
-
             return { code: 204 }
         } catch (error) {
             throw error;
