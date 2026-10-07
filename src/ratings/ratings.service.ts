@@ -1,180 +1,113 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    forwardRef,
+    Inject,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import DatabaseGenerator from '../config/db.config.js';
 import { RatingsCreateDto } from './dto/create-ratings.dto.js';
 import { RatingsUpdateDto } from './dto/update-ratings.dto.js';
 import { RatingsResponseDto } from './dto/response-ratings.dto.js';
 import { Ratings } from './entities/ratings.entity.js';
+import { LocationsService } from '../locations/locations.service.js';
+import { RatingsRepository } from './ratings.repository.js';
 import { Rating } from './schemas/ratings.schema.js';
-import Util from '../util/utils.js';
-import * as fs from 'fs';
 
 @Injectable()
 export class RatingsService {
 
-    private readonly path = new DatabaseGenerator().pathRatings;
-    private readonly pathLocations = new DatabaseGenerator().pathLocations;
-    private findAllLocations = new Util().findAllLocations(this.pathLocations);
+    constructor(
+        @InjectModel(Rating.name) private readonly ratingModel: Model<Rating>,
+        private readonly repository: RatingsRepository,
+        @Inject(forwardRef(() => LocationsService))
+        private readonly locationsService: LocationsService) { }
 
-    constructor() {
-        if (!fs.existsSync(this.path)) {
-            new DatabaseGenerator().setup();
-        }
+    async findAll(): Promise<Rating[]> {
+        return await this.repository.findAll();
     }
 
-    findAll(): Ratings[] {
-        try {
-            const rawData = fs.readFileSync(this.path, 'utf8');
-            const parsed = JSON.parse(rawData);
+    async findOne(id: string): Promise<Rating> {
+        const rating = await this.repository.findById(id);
 
-            return Array.isArray(parsed?.ratings) ? parsed?.ratings : [];
-        } catch (error) {
-            console.error(error);
-            return [];
+        if (!rating) {
+            throw new NotFoundException(`Rating with ID ("${id}") not found`);
         }
+
+        return rating;
     }
 
-    findOne(id: string): RatingsResponseDto {
-        try {
-            const repo = this.findAll();
-            const rating = repo.find((item) => item._id === id);
-
-            if (!rating) {
-                throw new NotFoundException(`Rating with ID "${id}" not found.`);
-            }
-
-            const createdAtDate = rating.createdAt ? new Date(rating.createdAt) : new Date();
-            const updatedAtDate = rating.updatedAt ? new Date(rating.updatedAt) : new Date();
-
-
-            return {
-                code: 200,
-                placeId: rating.placeId,
-                authorName: rating.authorName,
-                rating: rating.rating,
-                comment: rating.comment,
-                createdAt: createdAtDate.toISOString(),
-                updatedAt: updatedAtDate.toISOString()
-            };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                throw error;
-            }
-            throw error;
-        }
-    }
-
-    create(dto: RatingsCreateDto): RatingsResponseDto {
-        const repo = this.findAll();
-        const repoLocations = this.findAllLocations;
-
-        const location = repoLocations.find((item) => item._id === dto.placeId);
-
-        if (!location) {
-            throw new NotFoundException(`No location with "${dto.placeId}" exists.`);
+    async create(dto: Partial<RatingsCreateDto>): Promise<Rating> {
+        if (!dto?.placeId || !dto?.authorName || !dto?.rating || !dto?.comment) {
+            throw new BadRequestException("Request is missing at least one of these values : placeId / authorName / rating / comment)");
         }
 
-        const newRating = new Ratings(
+        const location = await this.locationsService.findOne(dto.placeId);
+
+        const newRating = new Ratings( // pour ajouter l'id
             dto.placeId,
             dto.authorName,
             dto.rating,
             dto.comment
         );
 
-        repo.push(newRating);
-
-        try {
-            fs.writeFileSync(this.path, JSON.stringify({ ratings: repo }, null, 2), 'utf8');
-
-            const ratings = repo.filter((item) => item.placeId === location._id);
-            const sum = ratings.reduce((sum, item) => sum + Number(item.rating), 0);
-
-            location.reviewCount = ratings.length;
-            location.averageRating = Number((sum / ratings.length).toFixed(2));
-
-            fs.writeFileSync(this.pathLocations, JSON.stringify({ locations: repoLocations }, null, 2), 'utf8');
-        } catch (error) {
-            throw error;
-        }
-
-        return {
-            code: 201,
-            createdAt: new Date().toISOString()
+        const createdRating: Partial<Rating> = {
+            _id: newRating._id,
+            placeId: newRating.placeId,
+            authorName: newRating.authorName,
+            rating: newRating.rating,
+            comment: newRating.comment,
         };
+
+        await this.repository.create(createdRating); // sync this with this.locationsService.updateRatings
+
+        const locationRatings = await this.ratingModel.find({ placeId: dto.placeId });
+        const ratingSum = locationRatings.reduce((ratingValue, review) => ratingValue + Number(review.rating), 0);
+        const reviewAverage = Number((ratingSum / locationRatings.length).toFixed(2));
+
+        await this.locationsService.updateRatings(location._id, 1, reviewAverage);
+
+        return newRating;
     }
 
-    update(id: string, dto: RatingsUpdateDto): RatingsResponseDto {
-        const repo = this.findAll();
-        const targetIndex = repo.findIndex((item) => String(item._id) === id);
-
-        if (targetIndex === -1) {
-            throw new NotFoundException(`Rating with ID "${id}" not found.`);
+    async update(id: string, dto: RatingsUpdateDto) {
+        if (!dto?.rating && !dto?.comment) {
+            throw new BadRequestException("Empty requests are not allowed for type PATCH");
         }
 
-        /* 
-        
-        Integartion IA
-        
-        Remplacer :
-        oldRating.rating == dto.rating,
-        oldRating.comment == dto.comment
+        await this.ratingModel.findByIdAndUpdate({ _id: id }, dto, { new: true })
 
-        Avec :*/
-        const updatedRating: Ratings = {
-            ...repo[targetIndex],
-            ...Object.fromEntries(
-                Object.entries(dto).filter(([_, value]) => value !== undefined)
-            ),
-            updatedAt: new Date()
-        };
+        if (dto.rating != undefined) {
+            const rating = await this.findOne(id);
+            const locationRatings = await this.ratingModel.find({ placeId: rating.placeId });
+            const ratingSum = locationRatings.reduce((ratingValue, review) => ratingValue + Number(review.rating), 0);
+            const reviewAverage = locationRatings.length > 0 ?
+                Number((ratingSum / locationRatings.length).toFixed(2)) : 0;
 
-        const updatedRepo = [...repo];
-        updatedRepo[targetIndex] = updatedRating;
-
-        try {
-            fs.writeFileSync(this.path, JSON.stringify({ ratings: updatedRepo }, null, 2), 'utf8');
-        } catch (error) {
-            throw error;
+            await this.locationsService.updateRatings(rating.placeId, 0, reviewAverage);
         }
 
-        return {
-            code: 200,
-            placeId: updatedRating.placeId,
-            authorName: updatedRating.authorName,
-            rating: updatedRating.rating,
-            comment: updatedRating.comment,
-            updatedAt: updatedRating.updatedAt.toISOString()
-        };
+        return await this.ratingModel.findByIdAndUpdate({ _id: id }, dto, { new: true });
     }
 
-    remove(id: string): RatingsResponseDto {
-        this.findOne(id);
+    async remove(id: string): Promise<RatingsResponseDto> {
+        const rating = await this.findOne(id);
 
-        const repo = this.findAll();
-        const repoLocations = this.findAllLocations;
-        const location = repoLocations.find((item) => String(item._id) === this.findOne(id).placeId);
+        await this.repository.deleteById(id);
 
-        if (location == null || undefined) {
-            throw new NotFoundException(`No location with "${id}" exists.`);
+        const location = await this.locationsService.findOne(rating.placeId);
+        if (location.reviewCount < 1) {
+            throw new InternalServerErrorException("Database is not synchronised with local changes, please report this issue to technical support");
         }
 
-        if (location.reviewCount > 0) {
-            location.reviewCount -= 1;
-            if (location.reviewCount == 0) {
-                location.averageRating = null;
-            }
-        }
+        const locationRatings = await this.ratingModel.find({ placeId: rating.placeId });
+        const ratingSum = locationRatings.reduce((ratingValue, review) => ratingValue + Number(review.rating), 0);
+        const reviewAverage = locationRatings.length > 0 ?
+            Number((ratingSum / locationRatings.length).toFixed(2)) : 0;
 
-        const newRepo = repo.filter((item) => String(item._id) !== id);
-
-
-        try {
-            fs.writeFileSync(this.path, JSON.stringify({ ratings: newRepo }, null, 2), 'utf8');
-            fs.writeFileSync(this.pathLocations, JSON.stringify({ locations: repoLocations }, null, 2), 'utf8');
-        } catch (error) {
-            throw error;
-        }
+        await this.locationsService.updateRatings(location._id, -1, reviewAverage);
 
         return { code: 204 };
     }

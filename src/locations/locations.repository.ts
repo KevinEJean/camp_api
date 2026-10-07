@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Location } from './schemas/locations.schema.js';
+import { LocationsCreateDto } from './dto/create-locations.dto.js';
 
 @Injectable()
 export class LocationsRepository {
@@ -15,7 +16,7 @@ export class LocationsRepository {
         return this.locationModel.findById(id).exec();
     }
 
-    async create(createdLocation: Partial<Location>): Promise<Location> {
+    async create(createdLocation: Partial<LocationsCreateDto>): Promise<Location> {
         return this.locationModel.create(createdLocation);
     }
 

@@ -2,7 +2,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { Category } from '../enums/category.enum.js';
 import { Status } from '../enums/status.enum.js';
-import Util from '../../util/utils.js';
 
 export type LocationDocument = HydratedDocument<Location>;
 

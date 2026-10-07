@@ -11,7 +11,7 @@ import Joi from 'joi';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.dev',
+      envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
       load: [databaseConfig],
       validationSchema: Joi.object({
         MONGO_URI: Joi.string().required(),
