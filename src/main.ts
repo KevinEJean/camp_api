@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import { VersioningType } from '@nestjs/common';
-import { configureSwagger } from './configure-swagger.js';
+import { VersioningType, InternalServerErrorException } from '@nestjs/common';
+import { configureSwagger } from './config/configure-swagger.js';
 import { AppModule } from './app.module.js';
 import { HttpExceptionFilter } from './exception/filters/http-exception.filter.js';
 import { ExecutionTimeInterceptor } from './exception/interceptors/execution-time.interceptor.js';
