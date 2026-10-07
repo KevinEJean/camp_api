@@ -1,6 +1,6 @@
 import { Max, IsDate, IsNotEmpty, IsNumber, IsString, Matches, Min } from 'class-validator';
-import { Locations } from "../../locations/entities/locations.entity.js";
-import { Util } from "../../util/utils.js";
+import { Locations } from '../../locations/entities/locations.entity.js';
+import Util from '../../util/utils.js';
 
 export class Ratings {
 

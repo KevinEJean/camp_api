@@ -1,4 +1,4 @@
-export class Util {
+export default class Util {
     public getRandomID(isstring: boolean, len: number): string {
         const chars = isstring ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : '0123456789';
         let result = '';
