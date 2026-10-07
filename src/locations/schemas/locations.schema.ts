@@ -35,11 +35,6 @@ export class Location {
 
     @Prop({ default: 0 })
     reviewCount: number;
-
-    constructor() {
-        const util = new Util();
-        this._id = `plc_01${util.getRandomID(true, 3)}${util.getRandomID(false, 3)}`;
-    }
 }
 
 export const LocationSchema = SchemaFactory.createForClass(Location);

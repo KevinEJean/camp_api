@@ -94,7 +94,7 @@ export class LocationsController {
         status: 404, 
         description: 'Emplacement non trouvé.'
     })
-    update(@Param('id') id: string, @Body() dto: LocationsUpdateDto): Promise<Location> {
+    update(@Param('id') id: string, @Body() dto: LocationsUpdateDto) {
         return this.service.update(id, dto);
     }
 

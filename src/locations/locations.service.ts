@@ -61,25 +61,14 @@ export class LocationsService {
         return await this.repository.create(createdLocation);
     }
 
-    async update(id: string, dto: Partial<LocationsUpdateDto>): Promise<Location> {
-        const updateDocument = await this.locationModel.updateOne(
-            {$match: { _id: id} },
-            [
-                { $set: { name: dto.name } },
-                { $set: { name: dto.description } },
-                { $set: { name: dto.category } },
-                { $set: { name: dto.address } },
-                { $set: { name: dto.services } },
-                { $set: { name: dto.status } },
-            ],
-            {updatePipeline: true}
-        );
+    async update(id: string, dto: Partial<LocationsUpdateDto>) {
 
-        if (updateDocument.modifiedCount < 1) {
-            throw new NotFoundException(`Location with ID ("${id}") not found.`);
+        if (!dto?.name && !dto?.description && !dto?.category && !dto?.address && !dto?.services && !dto?.status) {
+            throw new BadRequestException("Empty requests are not allowed for type PATCH");
         }
 
-        return this.findOne(id);
+
+        return this.locationModel.findByIdAndUpdate({ _id: id }, dto, { new: true }).exec();
     }
 
     async remove(id: string): Promise<LocationsResponseDto> {
