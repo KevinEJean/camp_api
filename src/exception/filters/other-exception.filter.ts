@@ -6,13 +6,13 @@ import { ExceptionDto } from '../exception.dto.js';
 export class OtherExceptionFilter implements ExceptionFilter {
 
     catch(exception: any, host: ArgumentsHost) {
-    
+
         const context = host.switchToHttp();
         const response = context.getResponse<Response>();
         const request = context.getRequest<Request>();
         const status = exception.getStatus();
         const exceptionResponse = exception.getResponse();
-        
+
         var type = "about:blank";
         if (request.url.includes("locations"))
             type = "locations";
