@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import { InternalServerErrorException, ValidationPipe, VersioningType } from '@nestjs/common';
-import { configureSwagger } from './config/configure-swagger.js';
+import { VersioningType } from '@nestjs/common';
+import { configureSwagger } from './configure-swagger.js';
 import { AppModule } from './app.module.js';
 import { HttpExceptionFilter } from './exception/filters/http-exception.filter.js';
 import { ExecutionTimeInterceptor } from './exception/interceptors/execution-time.interceptor.js';
@@ -10,8 +10,11 @@ import helmet from "helmet";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
   const allowedOrigins = [`http://localhost:${process.env.PORT}`];
+  
   app.use(helmet());
+  
   app.enableCors({
     origin: (origin: any, callback: any) => {
       if (!origin || allowedOrigins.includes(origin)) {
@@ -38,19 +41,8 @@ async function bootstrap() {
     defaultVersion: '1',
   });
   
-  app.useGlobalInterceptors(new ExecutionTimeInterceptor());
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
-  app.useGlobalFilters(new HttpExceptionFilter());
-
   configureSwagger(app);
-
-  await app.listen(port);
+  
+  await app.listen(process.env.PORT ?? 3000);
 }
-
 bootstrap();
