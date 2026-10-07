@@ -80,7 +80,7 @@ export class LocationsService {
         const location = await this.findOne(id);
 
         if (location.reviewCount !== 0) {
-            throw new ConflictException("Cannot delete this location because it reviews linked to it still exist");
+            throw new ConflictException("Cannot delete this location because some reviews are still linked to it");
         }
 
         await this.repository.deleteById(id);

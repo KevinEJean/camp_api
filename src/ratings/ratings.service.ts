@@ -77,6 +77,8 @@ export class RatingsService {
             throw new BadRequestException("Empty requests are not allowed for type PATCH");
         }
 
+        await this.findOne(id);
+
         await this.ratingModel.findByIdAndUpdate({ _id: id }, dto, { new: true })
 
         if (dto.rating != undefined) {
