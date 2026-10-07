@@ -1,15 +1,16 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiResponse, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
-import { RatingsService } from './ratings.service.js';
+import { ApiResponse, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
 import { RatingsResponseDto } from './dto/response-ratings.dto.js';
 import { RatingsCreateDto } from './dto/create-ratings.dto.js';
 import { RatingsUpdateDto } from './dto/update-ratings.dto.js';
 import { Ratings } from './entities/ratings.entity.js';
+import { RatingsService } from './ratings.service.js';
+import { Rating } from './schemas/ratings.schema.js';
 
 @Controller('ratings')
 export class RatingsController {
 
-    private readonly service = new RatingsService();
+    constructor(private readonly service: RatingsService) {}
 
     @Get()
     @ApiOperation({
@@ -20,7 +21,7 @@ export class RatingsController {
         status: 200,
         description: 'Liste des appréciations récupérée avec succès.'
     })
-    findAll(): Ratings[] {
+    findAll(): Promise<Ratings[]> {
         return this.service.findAll();
     }
 
@@ -43,7 +44,7 @@ export class RatingsController {
         status: 404,
         description: 'Appréciation introuvable.'
     })
-    findOne(@Param('id') id: string): RatingsResponseDto {
+    findOne(@Param('id') id: string): Promise<Rating> {
         return this.service.findOne(id);
     }
 
@@ -64,7 +65,7 @@ export class RatingsController {
         status: 400,
         description: 'Requête incorrecte / Erreur de validation.'
     })
-    create(@Body() dto: RatingsCreateDto): RatingsResponseDto {
+    create(@Body() dto: RatingsCreateDto): Promise<Rating> {
         return this.service.create(dto);
     }
 
@@ -93,10 +94,7 @@ export class RatingsController {
         status: 404,
         description: 'Appréciation introuvable.'
     })
-    update(
-        @Param('id') id: string,
-        @Body() dto: RatingsUpdateDto
-    ): RatingsResponseDto {
+    update(@Param('id') id: string, @Body() dto: RatingsUpdateDto) {
         return this.service.update(id, dto);
     }
 
@@ -118,7 +116,7 @@ export class RatingsController {
         status: 404,
         description: 'Appréciation introuvable.'
     })
-    remove(@Param('id') id: string): RatingsResponseDto {
+    remove(@Param('id') id: string): Promise<RatingsResponseDto> {
         return this.service.remove(id);
     }
 }

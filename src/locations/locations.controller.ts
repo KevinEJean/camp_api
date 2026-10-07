@@ -1,15 +1,15 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiResponse, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiResponse, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
 import { LocationsResponseDto } from './dto/response-locations.dto.js';
 import { LocationsCreateDto } from './dto/create-locations.dto.js';
 import { LocationsService } from './locations.service.js';
 import { LocationsUpdateDto } from './dto/update-locations.dto.js';
-import { Locations } from './entities/locations.entity.js';
+import { Location } from './schemas/locations.schema.js';
 
 @Controller('locations')
 export class LocationsController {
 
-    private readonly service = new LocationsService();
+    constructor (private readonly service: LocationsService) {}
 
     @Get()
     @ApiOperation({
@@ -21,7 +21,7 @@ export class LocationsController {
         description: 'Liste des emplacements récupérée avec succès.', 
         type: [LocationsResponseDto]
     })
-    findAll(): Locations[] {
+    findAll(): Promise<Location[]> {
         return this.service.findAll();
     }
 
@@ -44,7 +44,7 @@ export class LocationsController {
         status: 404, 
         description: 'Emplacement non trouvé.'
     })
-    findOne(@Param('id') id: string): LocationsResponseDto {
+    findOne(@Param('id') id: string): Promise<Location> {
         return this.service.findOne(id);
     }
 
@@ -65,7 +65,7 @@ export class LocationsController {
         status: 400, 
         description: 'Requête invalide / Erreur de validation.'
     })
-    create(@Body() dto: LocationsCreateDto): LocationsResponseDto {
+    create(@Body() dto: LocationsCreateDto): Promise<Location> {
         return this.service.create(dto);
     }
 
@@ -94,7 +94,7 @@ export class LocationsController {
         status: 404, 
         description: 'Emplacement non trouvé.'
     })
-    update(@Param('id') id: string, @Body() dto: LocationsUpdateDto): LocationsResponseDto {
+    update(@Param('id') id: string, @Body() dto: LocationsUpdateDto) {
         return this.service.update(id, dto);
     }
 
@@ -116,7 +116,7 @@ export class LocationsController {
         status: 404, 
         description: 'Emplacement non trouvé.'
     })
-    remove(@Param('id') id: string): LocationsResponseDto {
+    remove(@Param('id') id: string): Promise<LocationsResponseDto> {
         return this.service.remove(id);
     }
 }
