@@ -5,7 +5,7 @@ import { AppModule } from './app.module.js';
 import { HttpExceptionFilter } from './exception/filters/http-exception.filter.js';
 import { ExecutionTimeInterceptor } from './exception/interceptors/execution-time.interceptor.js';
 import { configureWinston } from './config/configure-winston.js';
-import helmet from "helmet";
+import helmet from 'helmet';
 
 
 async function bootstrap() {
@@ -43,13 +43,13 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ExecutionTimeInterceptor());
   
-  // app.useGlobalPipes(
-  //   new ValidationPipe({
-  //     whitelist: true,
-  //     forbidNonWhitelisted: true,
-  //     transform: true,
-  //   }),
-  // );
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   app.useGlobalFilters(new HttpExceptionFilter);
   

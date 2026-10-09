@@ -65,7 +65,6 @@ export class LocationsService {
     }
 
     async updateRatings(id: string, increment: number, average: number) {
-        console.log(id, increment, average)
         await this.locationModel.findByIdAndUpdate(
             id,
             {
@@ -74,6 +73,15 @@ export class LocationsService {
             },
             { new: true }
         ).exec();
+
+        const location = await this.findOne(id);
+        if (location.averageRating === 0) {
+            await this.locationModel.findByIdAndUpdate(
+                id,
+                { $set: { averageRating: null } },
+                { new: true }
+            ).exec();
+        }
     }
 
     async remove(id: string): Promise<LocationsResponseDto> {

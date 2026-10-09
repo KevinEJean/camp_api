@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber, Min, Max, IsMongoId } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, Min, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Locations } from "../../locations/entities/locations.entity.js";
 
@@ -9,6 +9,7 @@ export class RatingsCreateDto {
         example: 'plc_01ABC123',
     })
     @IsNotEmpty()
+    @IsString()
     placeId!: Locations['_id'];
 
     @ApiProperty({
