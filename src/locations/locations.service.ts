@@ -65,7 +65,6 @@ export class LocationsService {
     }
 
     async updateRatings(id: string, increment: number, average: number) {
-        console.log(id, increment, average)
         await this.locationModel.findByIdAndUpdate(
             id,
             {
@@ -74,13 +73,22 @@ export class LocationsService {
             },
             { new: true }
         ).exec();
+
+        const location = await this.findOne(id);
+        if (location.averageRating === 0) {
+            await this.locationModel.findByIdAndUpdate(
+                id,
+                { $set: { averageRating: null } },
+                { new: true }
+            ).exec();
+        }
     }
 
     async remove(id: string): Promise<LocationsResponseDto> {
         const location = await this.findOne(id);
 
         if (location.reviewCount !== 0) {
-            throw new ConflictException("Cannot delete this location because it reviews linked to it still exist");
+            throw new ConflictException("Cannot delete this location because some reviews are still linked to it");
         }
 
         await this.repository.deleteById(id);

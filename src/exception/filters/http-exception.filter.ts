@@ -1,26 +1,33 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
-import { ProblemsDto } from '../problems.dto.js';
+import { ExceptionDto } from '../exception.dto.js';
 
 @Catch(HttpException)
-export class ProblemsHttp implements ExceptionFilter {
+export class HttpExceptionFilter implements ExceptionFilter {
 
     catch(exception: HttpException, host: ArgumentsHost) {
-    
+
         const context = host.switchToHttp();
         const response = context.getResponse<Response>();
+        const request = context.getRequest<Request>();
         const status = exception.getStatus();
         const exceptionResponse = exception.getResponse();
 
-        const problemDetails: ProblemsDto = {
-            type: 'about:blank',
+        var type = "about:blank";
+        if (request.url.includes("locations"))
+            type = "locations";
+        else if (request.url.includes("ratings"))
+            type = "ratings";
+
+        const problemDetails: ExceptionDto = {
+            type: type,
             title: HttpStatus[status] || 'Error',
             status: status,
             detail:
                 typeof exceptionResponse === 'string'
                     ? exceptionResponse
                     : (exceptionResponse as any).message || 'An error occurred',
-            instance: context.getRequest().url,
+            instance: request.url,
             errors: (exceptionResponse as any).errors || undefined,
         };
 
