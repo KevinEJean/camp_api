@@ -207,7 +207,7 @@ Attribut falcutatif :
 - services = [ ] (valeur par défaut)
 - status = "ACTIVE" (valeur par défaut) ou "TEMPORARILY_CLOSED" ou "CLOSED"
 
-## (Persistance) des données
+## Persistance des données
 
 Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses caracteristique suivantes:
 
@@ -220,7 +220,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Ajouter du *rate limiting* (H1) <!-- +4 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
@@ -231,7 +231,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Expliquer correctement le role de HTTPS dans le README (T1) <!-- +1 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
@@ -242,7 +242,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Faire fonctionner `CampusRate` localement en HTTPS (T2) <!-- +5 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
@@ -253,7 +253,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Générer et utiliser un certificat local autosigné (T3) <!-- +2 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
@@ -264,7 +264,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Mettre en place une redirection HTTP -> HTTPS (T4) <!-- +2 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
@@ -275,6 +275,17 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Utiliser une *allowList* explicicte de filtres (P1) <!-- +2 -->
 
+Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `CampusRate` peuvent effectuer des requêtes vers celui-ci. Toute autre source sera rejetée comme ceci:
+```json
+{
+  "type": "locations",
+  "title": "Internal Server Error",
+  "status": 500,
+  "detail": "An unexpected error occurred",
+  "instance": "/api/v1/locations"
+}
+```
+
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/37
 - Commit: https://github.com/KevinEJean/camp_api/pull/37/changes/55359bbf42c00cd67266c78e516b34449473baa3
 
@@ -282,7 +293,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Sélection explicite des propriétés modifiables (P2) <!-- +2 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
@@ -291,16 +302,16 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 -->
 ---
 
-### Journalisatoin des opérations (L1) <!-- +3 -->
+### Journalisation des opérations (L1) <!-- +3 -->
 
-Example de log (dans le `terminal`):
+Exemple de log (dans le `terminal`):
 ```bash
 [Nest] 25688  - 10/12/2026, 7:04:54 PM     LOG [RequestLoggerMiddleware] GET /api/v1/locations
 [Nest] 25688  - 10/12/2026, 7:04:54 PM     LOG [ExecutionTimeInterceptor] GET /api/v1/locations - 75 ms
 ```
 
-Dans le fichiers `log/allRequests.log`:
-```bash
+Dans le fichier `log/allRequests.log`:
+```json
 {"level":"info","message":"GET /api/v1/locations","timestamp":"2026-10-12T23:04:54.795Z"}
 ```
 
@@ -309,7 +320,20 @@ Dans le fichiers `log/allRequests.log`:
 
 ---
 
-### Journalisatoin des erreurs (L2) <!-- +3 -->
+### Journalisation des erreurs (L2) <!-- +3 -->
+
+Exemple de log (dans le `terminal`):
+```json
+{
+  "level": "warn",
+  "message": "Cannot GET /api/v1/locationss",
+  "method": "GET",
+  "path": "/v1/locationss",
+  "possibleSolution": "The requested resource was not found. Verify the ID, URL or Method is correct and that the resource has not been deleted.",
+  "statusCode": 404,
+  "timestamp": "2026-10-12T23:12:14.660Z"
+}
+```
 
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/57
 - Commit: https://github.com/KevinEJean/camp_api/pull/57/changes/e3b836c8921193b16d041a751ca351e035e13ed2
@@ -318,7 +342,7 @@ Dans le fichiers `log/allRequests.log`:
 
 ### Autorisation RBAC (A2) <!-- +5 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
