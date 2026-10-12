@@ -23,7 +23,8 @@ API REST de gestion de données et services lié au campus.
 - Jest;
 - Supertest;
 - ESLint;
-- Prettier.
+- Prettier;
+- MongoDB.
 
 ## Prérequis
 
