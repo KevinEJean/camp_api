@@ -3,6 +3,7 @@ import { VersioningType, InternalServerErrorException, ValidationPipe } from '@n
 import { configureSwagger } from './configs/configure-swagger.js';
 import { AppModule } from './app.module.js';
 import { HttpExceptionFilter } from './exceptions/filters/http-exception.filter.js';
+import { InternalExceptionFilter } from './exceptions/filters/internal-exception.filter.js';
 import { ExecutionTimeInterceptor } from './exceptions/interceptors/execution-time.interceptor.js';
 import { configureWinston } from './configs/configure-winston.js';
 import helmet from 'helmet';
@@ -51,7 +52,7 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(new HttpExceptionFilter);
+  app.useGlobalFilters(new HttpExceptionFilter(), new InternalExceptionFilter());
   
   configureSwagger(app);
   
