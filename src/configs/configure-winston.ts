@@ -10,7 +10,7 @@ export function configureWinston(app: INestApplication) {
       ),
       transports: [
         new winton.transports.Console(),
-        new winton.transports.File({ filename: 'logs/app.log' })
+        new winton.transports.File({ filename: 'logs/allRequests.log' })
       ]
     });
     app.use((req: any, res: any, next: any) => {
