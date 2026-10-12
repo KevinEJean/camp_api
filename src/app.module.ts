@@ -1,11 +1,11 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import databaseConfig from './config/database.config.js';
+import databaseConfig from './configs/database.config.js';
 import { HealthModule } from './health/health.module.js';
 import { LocationsModule } from './locations/locations.module.js';
 import { RatingsModule } from './ratings/ratings.module.js';
-import { RequestLoggerMiddleware } from './exception/middleware/request-logger.middleware.js';
+import { RequestLoggerMiddleware } from './exceptions/middleware/request-logger.middleware.js';
 import Joi from 'joi';
 
 @Module({

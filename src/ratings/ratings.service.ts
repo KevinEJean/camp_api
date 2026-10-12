@@ -32,17 +32,17 @@ export class RatingsService {
     async findOne(id: string): Promise<Rating> {
         const rating = await this.repository.findById(id);
 
-        if (!rating) {
+        if (!rating)
             throw new NotFoundException(`Rating with ID ("${id}") not found`);
-        }
 
         return rating;
     }
 
     async create(dto: Partial<RatingsCreateDto>): Promise<Rating> {
-        if (!dto?.placeId || !dto?.authorName || !dto?.rating || !dto?.comment) {
-            throw new BadRequestException("Request is missing at least one of these values : placeId / authorName / rating / comment)");
-        }
+        if (!dto?.placeId || !dto?.authorName || !dto?.rating || !dto?.comment)
+            throw new BadRequestException(
+                "Request is missing at least one of these values : placeId / authorName / rating / comment)"
+            );
 
         const location = await this.locationsService.findOne(dto.placeId);
 
@@ -73,9 +73,9 @@ export class RatingsService {
     }
 
     async update(id: string, dto: RatingsUpdateDto) {
-        if (!dto?.rating && !dto?.comment) {
+        if (!dto?.rating && !dto?.comment)
             throw new BadRequestException("Empty requests are not allowed for type PATCH");
-        }
+
 
         await this.findOne(id);
 
@@ -100,9 +100,11 @@ export class RatingsService {
         await this.repository.deleteById(id);
 
         const location = await this.locationsService.findOne(rating.placeId);
-        if (location.reviewCount < 1) {
-            throw new InternalServerErrorException("Database is not synchronised with local changes, please report this issue to technical support");
-        }
+        if (location.reviewCount < 1)
+            throw new InternalServerErrorException(
+                "Database is not synchronised with local changes, please report this issue to technical support"
+            );
+
 
         const locationRatings = await this.ratingModel.find({ placeId: rating.placeId });
         const ratingSum = locationRatings.reduce((ratingValue, review) => ratingValue + Number(review.rating), 0);
