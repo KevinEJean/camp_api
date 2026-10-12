@@ -8,7 +8,8 @@ API REST de gestion de données et services lié au campus.
 
 - vérification de l’état du service;
 - gestion des emplacements et ces appréciations;
-- gestion d'erreures globale
+- gestion d'erreurs globale;
+- persistance de données;
 - réponses HTTP au format JSON;
 - architecture modulaire par domaine;
 - contrôles de qualité avec ESLint et Prettier.
