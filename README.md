@@ -1,6 +1,6 @@
 # CampusRate API - v1.0.0
 
-API REST de gestion de données et services lié au campus.
+API REST de gestion de données et de services liée au campus.
 
 `camp-api` fournit un point d’entrée central pour enregistrer, consulter et exploiter les informations nécessaires. Le projet est développé avec [NestJS](https://nestjs.com/) et TypeScript.
 
@@ -52,24 +52,24 @@ Installer les dépendances :
 
 ```bash
 npm install
-npm ls # verifier l'installation des dépendances
+npm ls # vérifier l'installation des dépendances
 ```
 
 ## Configuration
 
-L’application attend la variable d’environnement suivante :
+L’application attend la variable d’environnement suivante dans le fichier `.env.<NODE_ENV>`:
 
 | Variable | Obligatoire | Description | Exemple local |
 |---|---|---|---|
 | `PORT` | Oui | Port d’écoute du serveur HTTP | `3000` |
 | `NODE_ENV` | Oui | Fichier `.env` à utiliser | `"development"` |
-| `MONGO_URI` | Oui | Cluster d'une base de donnees MongoDB | `"mongodb+srv://<username>:<password>@<cluster>/?appName=Cluster-dev"` |
+| `MONGO_URI` | Oui | Cluster d'une base de données MongoDB | `"mongodb+srv://<username>:<password>@<cluster>/?appName=Cluster-dev"` |
 
 Créer un fichier `.env` :
 
 ```bash
 cp .env.example .env.development
-# remplacer les informations entourés de '<...>' et changer les auters variables si besoin
+# remplacer les informations entourées de '<...>' et changer les autres variables au besoin
 ```
 
 ## Exécution
@@ -110,7 +110,7 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste technique
 | Méthode | Route | Statut attendu | Description |
 |---|---|---:|---|
 | `GET` | `/api/v1/locations` | `200 OK` | Retourne les emplacements |
-| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une emplacements |
+| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne un emplacement |
 | `POST` | `/api/v1/locations` | `201 Created` | Crée un emplacement |
 | `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie un emplacement |
 | `DELETE` | `/api/v1/locations/{id}` | `204 No Content` | Supprime un emplacement |
@@ -195,7 +195,7 @@ Invoke-WebRequest -Method Post `
 }
 ```
 
-2. Executer la requête:
+2. Exécuter la requête:
 
 ```bat
 curl -i -X POST http://localhost:3000/api/v1/locations ^
@@ -203,13 +203,13 @@ curl -i -X POST http://localhost:3000/api/v1/locations ^
   --data-binary @location.json
 ```
 
-Attribut falcutatif :
+Attribut facultatif :
 - services = [ ] (valeur par défaut)
 - status = "ACTIVE" (valeur par défaut) ou "TEMPORARILY_CLOSED" ou "CLOSED"
 
 ## Persistance des données
 
-Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses caracteristique suivantes:
+Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses caractéristiques suivantes:
 
 - **Format JSON natif** : les emplacements et appréciations sont des documents JSON, ce qui s'intègre directement avec NestJS et TypeScript;
 - **Schéma flexible** : de nouveaux champs peuvent être ajoutés sans migration pendant le développement actif;
@@ -229,7 +229,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 -->
 ---
 
-### Expliquer correctement le role de HTTPS dans le README (T1) <!-- +1 -->
+### Expliquer correctement le rôle de HTTPS dans le README (T1) <!-- +1 -->
 
 > À implémenter dans le futur
 <!-- 
@@ -273,7 +273,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 -->
 ---
 
-### Utiliser une *allowList* explicicte de filtres (P1) <!-- +2 -->
+### Utiliser une *allowList* explicite de filtres (P1) <!-- +2 -->
 
 Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `CampusRate` peuvent effectuer des requêtes vers celui-ci. Toute autre source sera rejetée comme ceci:
 ```json
@@ -312,7 +312,7 @@ Exemple de log (dans le `terminal`):
 
 Dans le fichier `log/allRequests.log`:
 ```json
-{"level":"info","message":"GET /api/v1/locations","timestamp":"2026-10-12T23:04:54.795Z"}
+{"level": "info", "message": "GET /api/v1/locations", "timestamp": "2026-10-12T23:04:54.795Z"}
 ```
 
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/35
