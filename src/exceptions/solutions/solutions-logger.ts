@@ -14,11 +14,7 @@ export const EXCEPTION_SOLUTION: ExceptionSolution[] = [
     },
     {
         match: (e: any) => e?.status === 409,
-        solution: 'The request conflicts with the current state of the resource (ex.: deleting a location with reviews). Refresh the data and retry.',
-    },
-    {
-        match: (e: any) => e?.status === 422,
-        solution: 'The request was well-formed but failed validation (ex.: trying to duplicate location with POST). Review the field values against the expected rules and correct any invalid input.',
+        solution: 'The request conflicts with the current state of the resource (ex.: deleting a location with reviews, trying to duplicate a location with POST). Refresh the data and retry.',
     },
     {
         match: (e: any) => e?.statusCode === 500,

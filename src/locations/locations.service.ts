@@ -35,7 +35,7 @@ export class LocationsService {
             );
 
         if (await this.checkIfLocationExists(dto.name))
-            throw new UnprocessableEntityException(
+            throw new ConflictException(
                 "Duplicate locations not allowed, please choose a different name"
             );
 
