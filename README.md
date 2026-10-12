@@ -1,4 +1,4 @@
-# CampusRate API
+# CampusRate API - v1.0.0
 
 API REST de gestion de données et services lié au campus.
 
@@ -9,7 +9,7 @@ API REST de gestion de données et services lié au campus.
 ## Fonctionnalités
 
 - vérification de l’état du service;
-- gestion des locations;
+- gestion des emplacements et ces appréciations;
 - gestion d'erreures globale
 - réponses HTTP au format JSON;
 - architecture modulaire par domaine;
@@ -25,7 +25,7 @@ API REST de gestion de données et services lié au campus.
 - ESLint;
 - Prettier.
 
-## Prérequis
+## (Prérequis)
 
 - une version de Node.js compatible avec le fichier `package.json`;
 - npm;
@@ -52,6 +52,7 @@ Installer les dépendances :
 
 ```bash
 npm install
+npm ls # verifier l'installation des dépendances
 ```
 
 ## Configuration
@@ -61,29 +62,15 @@ L’application attend la variable d’environnement suivante :
 | Variable | Obligatoire | Description | Exemple local |
 |---|---|---|---|
 | `PORT` | Oui | Port d’écoute du serveur HTTP | `3000` |
+| `NODE_ENV` | Oui | Fichier `.env` à utiliser | `"development"` |
+| `MONGO_URI` | Oui | Cluster d'une base de donnees MongoDB | `"mongodb+srv://<username>:<password>@<cluster>/?appName=Cluster-dev"` |
 
-Le numéro `3000` est seulement un exemple de configuration locale. L’application ne doit pas imposer silencieusement ce port dans son code.
-
-Sous Linux ou macOS :
-
-```bash
-PORT=3000 npm run start:dev
-```
-
-Sous PowerShell :
-
-```powershell
-$env:PORT=3000
-npm run start:dev
-```
-
-Si le projet utilise un fichier `.env`, créer celui-ci à partir du modèle versionné :
+Créer un fichier `.env` :
 
 ```bash
-cp .env.example .env
+cp .env.example .env.development
+# remplacer les informations entourés de '<...>' et changer les auters variables si besoin
 ```
-
-Le fichier `.env` ne doit jamais être ajouté au dépôt.
 
 ## Exécution
 
@@ -93,14 +80,14 @@ Le fichier `.env` ne doit jamais être ajouté au dépôt.
 npm run start:dev
 ```
 
-### Production
+### (Production)
 
 ```bash
 npm run build
 npm run start:prod
 ```
 
-Avec `PORT=3000`, l’API est accessible à l’adresse suivante :
+Avec `PORT=3000` (port par défaut), l’API est accessible à l’adresse suivante :
 
 ```text
 http://localhost:3000/api/v1
@@ -118,117 +105,275 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste technique
 |---|---|---:|---|
 | `GET` | `/api/v1/health` | `200 OK` | Vérifie l’état du service |
 
-### Locations
+### Emplacements
 
 | Méthode | Route | Statut attendu | Description |
 |---|---|---:|---|
-| `GET` | `/api/v1/locations` | `200 OK` | Retourne les locations |
-| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une locations |
-| `POST` | `/api/v1/locations` | `201 Created` | Crée une location |
-| `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie une location |
-| `DELETE` | `/api/v1/locations/{id}` | `204 No Content` | Supprime une location |
+| `GET` | `/api/v1/locations` | `200 OK` | Retourne les emplacements |
+| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une emplacements |
+| `POST` | `/api/v1/locations` | `201 Created` | Crée un emplacement |
+| `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie un emplacement |
+| `DELETE` | `/api/v1/locations/{id}` | `204 No Content` | Supprime un emplacement |
 
 ### Ratings
 
 | Méthode | Route | Statut attendu | Description |
 |---|---|---:|---|
-| `GET` | `/api/v1/ratings` | `200 OK` | Retourne les ratings |
-| `GET` | `/api/v1/ratings/{id}` | `200 OK` | Retourne un ratings |
-| `POST` | `/api/v1/ratings` | `201 Created` | Crée un ratings |
-| `PATCH` | `/api/v1/ratings/{id}` | `200 OK` | Modifie un ratings |
-| `DELETE` | `/api/v1/ratings/{id}` | `204 No Content` | Supprime un ratings |
+| `GET` | `/api/v1/ratings` | `200 OK` | Retourne les appréciations |
+| `GET` | `/api/v1/ratings/{id}` | `200 OK` | Retourne une appréciation |
+| `POST` | `/api/v1/ratings` | `201 Created` | Crée une appréciation |
+| `PATCH` | `/api/v1/ratings/{id}` | `200 OK` | Modifie une appréciation |
+| `DELETE` | `/api/v1/ratings/{id}` | `204 No Content` | Supprime une appréciation |
 
 ### Vérifier l’état du service
 
 ```bash
-curl -i http://localhost:3000/api/v1/health
+curl -i -X GET http://localhost:3000/api/v1/health
 ```
 
-Exemple de réponse :
+Réponse attendue :
 
 ```bash
 CampusRate API is up and running 🚀
 ```
 
-### Obtenir les locations
+### Obtenir les emplacements
 
 ```bash
 curl -i -X GET http://localhost:3000/api/v1/locations
 ```
 
-### Créer une location
+### Créer un emplacement
 
-Bash
+#### macOS, Linux, WSL
 ```bash
-curl -i -X POST -d '{"name":"Bibliothèque principale", "description":"Espace calme avec prises.", "category":"STUDY_SPACE", "address":"Pavillon A, local A-210", "services":["WIFI", "POWER_OUTLETS", "SEATING"], "status":"ACTIVE"}' http://localhost:3000/api/v1/locations
+curl -i -X POST http://localhost:3000/api/v1/locations \
+  -H "Content-Type: application/json; charset=utf-8" \
+  --data-binary @- <<'EOF'
+{
+  "name": "Bibliothèque Centrale",
+  "description": "Espace de travail calme avec postes informatiques et salles de réunion.",
+  "category": "STUDY_SPACE",
+  "address": "1234, rue de l'Université, Montréal, QC",
+  "services": ["Wi-Fi", "Impression", "Salles d'étude"],
+  "status": "ACTIVE"
+}
+EOF
 ```
 
-PowerShell
+#### (PowerShell)
 ```powershell
-curl.exe -i -X POST http://localhost:3000/api/v1/locations `
-  -H "Content-Type: application/json" `
-  -d "{\`"name\`":\`"Bibliothèque principale\`", \`"description\`":\`"Espace calme avec prises.\`", \`"category\`":\`"STUDY_SPACE\`", \`"address\`":\`"Pavillon A, local A-210\`", \`"services\`":[\`"WIFI\`",\`"POWER_OUTLETS\`",\`"SEATING\`"], \`"status\`":\`"ACTIVE\`"}"
+$body = @'
+{
+  "name": "Bibliothèque Centrale",
+  "description": "Espace de travail calme avec postes informatiques et salles de réunion.",
+  "category": "STUDY_SPACE",
+  "address": "1234, rue de l'Université, Montréal, QC",
+  "services": ["Wi-Fi", "Impression", "Salles d'étude"],
+  "status": "ACTIVE"
+}
+'@
+
+Invoke-WebRequest -Method Post `
+  -Uri "http://localhost:3000/api/v1/locations" `
+  -ContentType "application/json; charset=utf-8" `
+  -Body ([System.Text.Encoding]::UTF8.GetBytes($body))
+```
+
+#### CMD
+
+1. Sauvegarder le JSON ci-dessous comme `location.json` (encodé avec **UTF-8**):
+
+```json
+{
+  "name": "Bibliothèque Centrale",
+  "description": "Espace de travail calme avec postes informatiques et salles de réunion.",
+  "category": "STUDY_SPACE",
+  "address": "1234, rue de l'Université, Montréal, QC",
+  "services": ["Wi-Fi", "Impression", "Salles d'étude"],
+  "status": "ACTIVE"
+}
+```
+
+2. Executer la requête:
+
+```bat
+curl -i -X POST http://localhost:3000/api/v1/locations ^
+  -H "Content-Type: application/json; charset=utf-8" ^
+  --data-binary @location.json
 ```
 
 Attribut falcutatif :
 - services = [ ] (valeur par défaut)
 - status = "ACTIVE" (valeur par défaut) ou "TEMPORARILY_CLOSED" ou "CLOSED"
 
-## Persistance des données
+## (Persistance) des données
 
-La base de données persiste après réinitialisation. Au cas où le fichier (ou le dossier) est supprimée, une nouvelle base de données sera créée pendant l'initialisation de l'application.
+Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses caracteristique suivantes:
+
+- **Format JSON natif** : les emplacements et appréciations sont des documents JSON, ce qui s'intègre directement avec NestJS et TypeScript;
+- **Schéma flexible** : de nouveaux champs peuvent être ajoutés sans migration pendant le développement actif;
+- **Persistance** : les données survivent aux redémarrages et aux redéploiements;
+- **Aucune installation locale** : seule la variable `MONGO_URI` est nécessaire.
+
+## Fonctionnalités optionnelles implémentées <!-- 8 / 30 -->
+
+### Ajouter du *rate limiting* (H1) <!-- +4 -->
+
+> A implementé dans le future
+<!-- 
+
+- Pull Request: <lien> 
+- Commit: <lien> 
+
+-->
+---
+
+### Expliquer correctement le role de HTTPS dans le README (T1) <!-- +1 -->
+
+> A implementé dans le future
+<!-- 
+
+- Pull Request: <lien> 
+- Commit: <lien> 
+
+-->
+---
+
+### Faire fonctionner `CampusRate` localement en HTTPS (T2) <!-- +5 -->
+
+> A implementé dans le future
+<!-- 
+
+- Pull Request: <lien> 
+- Commit: <lien> 
+
+-->
+---
+
+### Générer et utiliser un certificat local autosigné (T3) <!-- +2 -->
+
+> A implementé dans le future
+<!-- 
+
+- Pull Request: <lien> 
+- Commit: <lien> 
+
+-->
+---
+
+### Mettre en place une redirection HTTP -> HTTPS (T4) <!-- +2 -->
+
+> A implementé dans le future
+<!-- 
+
+- Pull Request: <lien> 
+- Commit: <lien> 
+
+-->
+---
+
+### Utiliser une *allowList* explicicte de filtres (P1) <!-- +2 -->
+
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/37
+- Commit: https://github.com/KevinEJean/camp_api/pull/37/changes/55359bbf42c00cd67266c78e516b34449473baa3
+
+---
+
+### Sélection explicite des propriétés modifiables (P2) <!-- +2 -->
+
+> A implementé dans le future
+<!-- 
+
+- Pull Request: <lien> 
+- Commit: <lien> 
+
+-->
+---
+
+### Journalisatoin des opérations (L1) <!-- +3 -->
+
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/35
+- Commit: https://github.com/KevinEJean/camp_api/pull/35/changes#diff-4fab5baaca5c14d2de62d8d2fceef376ddddcc8e9509d86cfa5643f51b89ce3d
+
+---
+
+### Journalisatoin des erreurs (L2) <!-- +3 -->
+
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/57
+- Commit: https://github.com/KevinEJean/camp_api/pull/57/changes/e3b836c8921193b16d041a751ca351e035e13ed2
+
+---
+
+### Autorisation RBAC (A2) <!-- +5 -->
+
+> A implementé dans le future
+<!-- 
+
+- Pull Request: <lien> 
+- Commit: <lien> 
+
+-->
+---
 
 ## Structure du projet
 
 ```text
 src/
-├── app.controller.spec.ts
 ├── app.controller.ts
 ├── app.module.ts
-├── app.service.spec.ts
 ├── app.service.ts
 ├── main.ts
-├── util/
-│   └── util.ts
-├── config/
-│   └── db.config.ts
-├── data/
-│   └── databaseLocations.json
-│   └── databaseRatings.json
+├── configs/
+│   ├── configure-swagger.ts
+│   ├── configure-winston.ts
+│   └── database.config.ts
+├── exceptions/
+│   ├── exceptions.dto.ts
+│   ├── filters/
+│   │   ├── http-exception.filter.ts
+│   │   └── internal-exception.filter.ts
+│   ├── interceptors/
+│   │   └── execution-time.interceptor.ts
+│   ├── middleware/
+│   │   └── request-logger.middleware.ts
+│   └── solutions/
+│       ├── solutions-logger.ts
+│       └── solutions-payload.ts
 ├── health/
 │   ├── health.controller.ts
 │   └── health.module.ts
 ├── locations/
-│   ├── locations.module.ts
 │   ├── locations.controller.ts
+│   ├── locations.module.ts
+│   ├── locations.repository.ts
 │   ├── locations.service.ts
-│   ├── locations.service.spec.ts
 │   ├── dto/
 │   │   ├── create-locations.dto.ts
 │   │   ├── response-locations.dto.ts
 │   │   └── update-locations.dto.ts
 │   ├── entities/
 │   │   └── locations.entity.ts
-│   └── enums/
-│       ├── category.enum.ts
-│       └── status.enum.ts
-├── problems/
-│   ├── problems-manager.ts
-│   ├── problems.dto.ts
-│   ├── problems.entity.ts
-│   ├── details/
-│   │   ├── problems-default.ts
-│   │   ├── problems-http.ts
-└── ratings/
-    ├── ratings.module.ts
-    ├── ratings.controller.ts
-    ├── ratings.service.ts
-    ├── romms.service.spec.ts
-    ├── dto/
-    │   ├── create-ratings.dto.ts
-    │   └── update-ratings.dto.ts
-    └── entities/
-        └── ratings.entity.ts
+│   ├── enums/
+│   │   ├── category.enum.ts
+│   │   └── status.enum.ts
+│   └── schemas/
+│       └── locations.schema.ts
+├── ratings/
+│   ├── ratings.controller.ts
+│   ├── ratings.module.ts
+│   ├── ratings.repository.ts
+│   ├── ratings.service.ts
+│   ├── dto/
+│   │   ├── create-ratings.dto.ts
+│   │   ├── response-ratings.dto.ts
+│   │   └── update-ratings.dto.ts
+│   ├── entities/
+│   │   └── ratings.entity.ts
+│   └── schemas/
+│       └── ratings.schema.ts
+└── utils/
+    └── utils.ts
 ```
 
 Le projet suit une organisation par fonctionnalité :
@@ -259,6 +404,6 @@ Pour signaler une vulnérabilité, utiliser le mécanisme de signalement privé 
 - [IAGraphie](docs/IAGraphie.pdf)
 - [Postman](docs/Test_Postman.md)
 
-## Licence
+## (Licence)
 
 Consulter le fichier `LICENSE` à la racine du dépôt pour connaître les conditions d’utilisation et de redistribution.
