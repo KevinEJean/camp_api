@@ -1,4 +1,4 @@
-export class ExceptionDto {
+export class ExceptionsDto {
     type: string;
     title: string;
     status: number;

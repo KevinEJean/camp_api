@@ -1,11 +1,13 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, InternalServerErrorException } from '@nestjs/common';
 import { Response } from 'express';
-import { ExceptionDto } from '../exception.dto.js';
+import { ExceptionsDto } from '../exceptions.dto.js';
+import { logException } from '../solutions/solutions-payload.js';
 
 @Catch(InternalServerErrorException)
-export class OtherExceptionFilter implements ExceptionFilter {
+export class InternalExceptionFilter implements ExceptionFilter {
 
     catch(exception: any, host: ArgumentsHost) {
+        logException(exception, host);
 
         const context = host.switchToHttp();
         const response = context.getResponse<Response>();
@@ -14,12 +16,10 @@ export class OtherExceptionFilter implements ExceptionFilter {
         const exceptionResponse = exception.getResponse();
 
         var type = "about:blank";
-        if (request.url.includes("locations"))
-            type = "locations";
-        else if (request.url.includes("ratings"))
-            type = "ratings";
+        if (request.url.includes("locations")) type = "locations";
+        else if (request.url.includes("ratings")) type = "ratings";
 
-        const problemDetails: ExceptionDto = {
+        const problemDetails: ExceptionsDto = {
             type: type,
             title: 'Internal Server Error',
             status: status,
