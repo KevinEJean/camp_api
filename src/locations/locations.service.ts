@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { LocationsCreateDto } from './dto/create-locations.dto.js';
@@ -35,7 +35,7 @@ export class LocationsService {
             );
 
         if (await this.checkIfLocationExists(dto.name))
-            throw new BadRequestException(
+            throw new UnprocessableEntityException(
                 "Duplicate locations not allowed, please choose a different name"
             );
 
