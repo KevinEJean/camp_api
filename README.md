@@ -25,7 +25,7 @@ API REST de gestion de données et services lié au campus.
 - ESLint;
 - Prettier.
 
-## (Prérequis)
+## Prérequis
 
 - une version de Node.js compatible avec le fichier `package.json`;
 - npm;
@@ -161,7 +161,7 @@ curl -i -X POST http://localhost:3000/api/v1/locations \
 EOF
 ```
 
-#### (PowerShell)
+#### PowerShell
 ```powershell
 $body = @'
 {
