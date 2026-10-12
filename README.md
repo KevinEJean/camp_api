@@ -4,8 +4,6 @@ API REST de gestion de données et services lié au campus.
 
 `camp-api` fournit un point d’entrée central pour enregistrer, consulter et exploiter les informations nécessaires. Le projet est développé avec [NestJS](https://nestjs.com/) et TypeScript.
 
-> Le projet est en développement actif. Le contrat d’API peut évoluer avant la première version stable.
-
 ## Fonctionnalités
 
 - vérification de l’état du service;
