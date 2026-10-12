@@ -1,6 +1,6 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, InternalServerErrorException } from '@nestjs/common';
 import { Response } from 'express';
-import { ExceptionDto } from '../exception.dto.js';
+import { ExceptionsDto } from '../exceptions.dto.js';
 
 @Catch(InternalServerErrorException)
 export class OtherExceptionFilter implements ExceptionFilter {
@@ -19,7 +19,7 @@ export class OtherExceptionFilter implements ExceptionFilter {
         else if (request.url.includes("ratings"))
             type = "ratings";
 
-        const problemDetails: ExceptionDto = {
+        const problemDetails: ExceptionsDto = {
             type: type,
             title: 'Internal Server Error',
             status: status,

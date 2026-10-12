@@ -22,17 +22,22 @@ export class LocationsService {
     async findOne(id: string): Promise<Location> {
         const location = await this.repository.findById(id);
 
-        if (!location) {
+        if (!location)
             throw new NotFoundException(`Location with ID ("${id}") not found`);
-        }
 
         return location;
     }
 
     async create(dto: Partial<LocationsCreateDto>): Promise<Location> {
-        if (!dto?.name || !dto?.description || !dto?.category || !dto?.address) {
-            throw new BadRequestException("Request is missing at least one of these values : name / description / category / address)");
-        }
+        if (!dto?.name || !dto?.description || !dto?.category || !dto?.address)
+            throw new BadRequestException(
+                "Request is missing at least one of these values : name / description / category / address)"
+            );
+
+        if (await this.checkIfLocationExists(dto.name))
+            throw new BadRequestException(
+                "Duplicate locations not allowed, please choose a different name"
+            );
 
         const newLocation = new Locations( // pour ajouter l'id
             dto.name,
@@ -57,9 +62,16 @@ export class LocationsService {
     }
 
     async update(id: string, dto: Partial<LocationsUpdateDto>) {
-        if (!dto?.name && !dto?.description && !dto?.category && !dto?.address && !dto?.services && !dto?.status) {
+        const isEmptyRequest = (
+            !dto?.name && 
+            !dto?.description && 
+            !dto?.category && 
+            !dto?.address && 
+            !dto?.services && 
+            !dto?.status
+        );
+        if (isEmptyRequest)
             throw new BadRequestException("Empty requests are not allowed for type PATCH");
-        }
 
         return this.locationModel.findByIdAndUpdate({ _id: id }, dto, { new: true }).exec();
     }
@@ -87,11 +99,23 @@ export class LocationsService {
     async remove(id: string): Promise<LocationsResponseDto> {
         const location = await this.findOne(id);
 
-        if (location.reviewCount !== 0) {
-            throw new ConflictException("Cannot delete this location because some reviews are still linked to it");
-        }
+        if (location.reviewCount !== 0)
+            throw new ConflictException(
+                "Cannot delete this location because some reviews are still linked to it"
+            );
 
         await this.repository.deleteById(id);
         return { code: 204 }
+    }
+
+    async checkIfLocationExists(name: string): Promise<boolean> {
+        const location = await this.locationModel.aggregate([
+            { $match: { name: name } },
+        ]);
+
+        if (location.length > 0) {
+            return true;
+        }
+        return false;
     }
 }

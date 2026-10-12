@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { VersioningType, InternalServerErrorException, ValidationPipe } from '@nestjs/common';
-import { configureSwagger } from './config/configure-swagger.js';
+import { configureSwagger } from './configs/configure-swagger.js';
 import { AppModule } from './app.module.js';
-import { HttpExceptionFilter } from './exception/filters/http-exception.filter.js';
-import { ExecutionTimeInterceptor } from './exception/interceptors/execution-time.interceptor.js';
-import { configureWinston } from './config/configure-winston.js';
+import { HttpExceptionFilter } from './exceptions/filters/http-exception.filter.js';
+import { ExecutionTimeInterceptor } from './exceptions/interceptors/execution-time.interceptor.js';
+import { configureWinston } from './configs/configure-winston.js';
 import helmet from 'helmet';
 
 

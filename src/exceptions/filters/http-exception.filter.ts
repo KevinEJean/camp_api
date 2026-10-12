@@ -1,6 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
-import { ExceptionDto } from '../exception.dto.js';
+import { ExceptionsDto } from '../exceptions.dto.js';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -19,7 +19,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         else if (request.url.includes("ratings"))
             type = "ratings";
 
-        const problemDetails: ExceptionDto = {
+        const problemDetails: ExceptionsDto = {
             type: type,
             title: HttpStatus[status] || 'Error',
             status: status,
