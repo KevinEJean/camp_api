@@ -293,6 +293,17 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Journalisatoin des opérations (L1) <!-- +3 -->
 
+Example de log (dans le `terminal`):
+```bash
+[Nest] 25688  - 10/12/2026, 7:04:54 PM     LOG [RequestLoggerMiddleware] GET /api/v1/locations
+[Nest] 25688  - 10/12/2026, 7:04:54 PM     LOG [ExecutionTimeInterceptor] GET /api/v1/locations - 75 ms
+```
+
+Dans le fichiers `log/allRequests.log`:
+```bash
+{"level":"info","message":"GET /api/v1/locations","timestamp":"2026-10-12T23:04:54.795Z"}
+```
+
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/35
 - Commit: https://github.com/KevinEJean/camp_api/pull/35/changes#diff-4fab5baaca5c14d2de62d8d2fceef376ddddcc8e9509d86cfa5643f51b89ce3d
 
