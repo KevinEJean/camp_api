@@ -405,6 +405,6 @@ Pour signaler une vulnérabilité, utiliser le mécanisme de signalement privé 
 - [Postman](docs/Test_Postman.md)
 - [Roadmap](https://github.com/users/KevinEJean/projects/2)
 
-## (Licence)
+## License
 
-Consulter le fichier `LICENSE` à la racine du dépôt pour connaître les conditions d’utilisation et de redistribution.
+Consulter le fichier [LICENSE](LICENSE) à la racine du dépôt pour connaître les conditions d’utilisation et de redistribution.
