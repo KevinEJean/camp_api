@@ -21,14 +21,6 @@ export class LocationsUpdateDto {
     description?: string;
 
     @ApiPropertyOptional({
-        description: "Catégorie de l'emplacement",
-        enum: Category,
-    })
-    @IsOptional()
-    @IsString()
-    category?: Category;
-
-    @ApiPropertyOptional({
         description: "Adresse physique de l'emplacement",
         example: "1234, rue de l'Université, Montréal, QC",
     })

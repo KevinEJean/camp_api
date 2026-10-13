@@ -293,13 +293,33 @@ Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `Ca
 
 ### Sélection explicite des propriétés modifiables (P2) <!-- +2 -->
 
-> À implémenter dans le futur
-<!-- 
+Les constantes `_id` et `placeId` ne sont pas modifables parce que:
+
+- modifier une constante risque de briser l'indexation de mongoDB et est généralement une mauvaise pratiques;
+- ils sont auto-générés par le serveur, donc pas besoin de les modifier (API CampusRate).
+
+#### Données modifiables des emplacements
+
+| Variables | Modifiable | Raisonement |
+|---|---|---|
+| name | Oui | Il est possible qu'elle soit mal écrite lors de sa creation. |
+| description | Oui | Donner la chance d'ajouter / retirer des détails sur l'emplacements. |
+| category | Non | Un emplacement ne change jamais de categorie / fonctionnalité. |
+| address | Oui | Il est moins probable qu'une addresse change, cependant il est possible qu'elle soit mal écrite lors de sa creation. |
+| services | Oui | Il ce peut qu'il ajoutes des services après une construction. |
+| status | Oui | Il est très probable qu'il devient fermé en raison de construction. |
+
+#### Données modifiables des appréciations
+
+| Variables | Modifiable | Raisonement |
+|---|---|---|
+| authorName | Non | Afin de faciliter la modération et limiter les privilèges clients. |
+| rating | Oui | Donner la chance d'ajuster le score. |
+| comment | Oui | Il ce peut qu'une revue soit erroné ou l'autheur desir d'ajuster son commentaire. |
 
 - Pull Request: <lien> 
 - Commit: <lien> 
 
--->
 ---
 
 ### Journalisation des opérations (L1) <!-- +3 -->
