@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiResponse, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
 import { RatingsResponseDto } from './dto/response-ratings.dto.js';
 import { RatingsCreateDto } from './dto/create-ratings.dto.js';
@@ -6,6 +6,7 @@ import { RatingsUpdateDto } from './dto/update-ratings.dto.js';
 import { Ratings } from './entities/ratings.entity.js';
 import { RatingsService } from './ratings.service.js';
 import { Rating } from './schemas/ratings.schema.js';
+import { PermissionsGuard, RequirePermission } from '../auth/permission.gard.js';
 
 @Controller('ratings')
 export class RatingsController {
@@ -25,6 +26,8 @@ export class RatingsController {
         return this.service.findAll();
     }
 
+    @UseGuards(PermissionsGuard)
+    @RequirePermission('read', 'ratings')
     @Get(':id')
     @ApiOperation({
         summary: 'Récupérer une appréciation par ID',
@@ -48,6 +51,8 @@ export class RatingsController {
         return this.service.findOne(id);
     }
 
+    @UseGuards(PermissionsGuard)
+    @RequirePermission('create', 'ratings')
     @Post()
     @ApiOperation({
         summary: 'Créer une nouvelle appréciation',
@@ -69,6 +74,8 @@ export class RatingsController {
         return this.service.create(dto);
     }
 
+    @UseGuards(PermissionsGuard)
+    @RequirePermission('update', 'ratings')
     @Patch(':id')
     @ApiOperation({
         summary: 'Mettre à jour une appréciation existante',
@@ -98,6 +105,8 @@ export class RatingsController {
         return this.service.update(id, dto);
     }
 
+    @UseGuards(PermissionsGuard)
+    @RequirePermission('delete', 'ratings')
     @Delete(':id')
     @ApiOperation({
         summary: 'Supprimer une appréciation',
