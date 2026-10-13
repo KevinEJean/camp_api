@@ -1,4 +1,4 @@
-# CampusRate API - v1.0.0
+# CampusRate API - v1.0.1
 
 API REST de gestion de données et de services liée au campus.
 
