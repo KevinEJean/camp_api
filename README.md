@@ -379,8 +379,8 @@ Pas besoin d'authentification pour lire `(GET api/v1/locations && api/v1/ratings
 - Modifier un emplacement et une appréciation;
 - Supprimer un emplacement et une appréciation.
 
-- Pull Request: 
-- Commit: 
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/63
+- Commit: https://github.com/KevinEJean/camp_api/pull/63/changes/e4d2c7d1ad0cbb07b7336fc520c9ba3054967995
 
 ---
 
