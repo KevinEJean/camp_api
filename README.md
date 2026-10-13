@@ -1,16 +1,15 @@
-# CampusRate API - v1.0.0
+# CampusRate API - v1.0.1
 
-API REST de gestion de données et services lié au campus.
+API REST de gestion de données et de services liée au campus.
 
 `camp-api` fournit un point d’entrée central pour enregistrer, consulter et exploiter les informations nécessaires. Le projet est développé avec [NestJS](https://nestjs.com/) et TypeScript.
-
-> Le projet est en développement actif. Le contrat d’API peut évoluer avant la première version stable.
 
 ## Fonctionnalités
 
 - vérification de l’état du service;
 - gestion des emplacements et ces appréciations;
-- gestion d'erreures globale
+- gestion d'erreurs globale;
+- persistance de données;
 - réponses HTTP au format JSON;
 - architecture modulaire par domaine;
 - contrôles de qualité avec ESLint et Prettier.
@@ -23,9 +22,10 @@ API REST de gestion de données et services lié au campus.
 - Jest;
 - Supertest;
 - ESLint;
-- Prettier.
+- Prettier;
+- MongoDB.
 
-## (Prérequis)
+## Prérequis
 
 - une version de Node.js compatible avec le fichier `package.json`;
 - npm;
@@ -52,24 +52,24 @@ Installer les dépendances :
 
 ```bash
 npm install
-npm ls # verifier l'installation des dépendances
+npm ls # vérifier l'installation des dépendances
 ```
 
 ## Configuration
 
-L’application attend la variable d’environnement suivante :
+L’application attend la variable d’environnement suivante dans le fichier `.env.<NODE_ENV>`:
 
 | Variable | Obligatoire | Description | Exemple local |
 |---|---|---|---|
 | `PORT` | Oui | Port d’écoute du serveur HTTP | `3000` |
 | `NODE_ENV` | Oui | Fichier `.env` à utiliser | `"development"` |
-| `MONGO_URI` | Oui | Cluster d'une base de donnees MongoDB | `"mongodb+srv://<username>:<password>@<cluster>/?appName=Cluster-dev"` |
+| `MONGO_URI` | Oui | Cluster d'une base de données MongoDB | `"mongodb+srv://<username>:<password>@<cluster>/?appName=Cluster-dev"` |
 
 Créer un fichier `.env` :
 
 ```bash
 cp .env.example .env.development
-# remplacer les informations entourés de '<...>' et changer les auters variables si besoin
+# remplacer les informations entourées de '<...>' et changer les autres variables au besoin
 ```
 
 ## Exécution
@@ -110,7 +110,7 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste technique
 | Méthode | Route | Statut attendu | Description |
 |---|---|---:|---|
 | `GET` | `/api/v1/locations` | `200 OK` | Retourne les emplacements |
-| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne une emplacements |
+| `GET` | `/api/v1/locations/{id}` | `200 OK` | Retourne un emplacement |
 | `POST` | `/api/v1/locations` | `201 Created` | Crée un emplacement |
 | `PATCH` | `/api/v1/locations/{id}` | `200 OK` | Modifie un emplacement |
 | `DELETE` | `/api/v1/locations/{id}` | `204 No Content` | Supprime un emplacement |
@@ -161,7 +161,7 @@ curl -i -X POST http://localhost:3000/api/v1/locations \
 EOF
 ```
 
-#### (PowerShell)
+#### PowerShell
 ```powershell
 $body = @'
 {
@@ -195,7 +195,7 @@ Invoke-WebRequest -Method Post `
 }
 ```
 
-2. Executer la requête:
+2. Exécuter la requête:
 
 ```bat
 curl -i -X POST http://localhost:3000/api/v1/locations ^
@@ -203,13 +203,13 @@ curl -i -X POST http://localhost:3000/api/v1/locations ^
   --data-binary @location.json
 ```
 
-Attribut falcutatif :
+Attribut facultatif :
 - services = [ ] (valeur par défaut)
 - status = "ACTIVE" (valeur par défaut) ou "TEMPORARILY_CLOSED" ou "CLOSED"
 
-## (Persistance) des données
+## Persistance des données
 
-Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses caracteristique suivantes:
+Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses caractéristiques suivantes:
 
 - **Format JSON natif** : les emplacements et appréciations sont des documents JSON, ce qui s'intègre directement avec NestJS et TypeScript;
 - **Schéma flexible** : de nouveaux champs peuvent être ajoutés sans migration pendant le développement actif;
@@ -220,7 +220,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Ajouter du *rate limiting* (H1) <!-- +4 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
@@ -229,9 +229,9 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 -->
 ---
 
-### Expliquer correctement le role de HTTPS dans le README (T1) <!-- +1 -->
+### Expliquer correctement le rôle de HTTPS dans le README (T1) <!-- +1 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
@@ -242,7 +242,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Faire fonctionner `CampusRate` localement en HTTPS (T2) <!-- +5 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
@@ -253,7 +253,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Générer et utiliser un certificat local autosigné (T3) <!-- +2 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
@@ -264,7 +264,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Mettre en place une redirection HTTP -> HTTPS (T4) <!-- +2 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 
@@ -273,7 +273,18 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 -->
 ---
 
-### Utiliser une *allowList* explicicte de filtres (P1) <!-- +2 -->
+### Utiliser une *allowList* explicite de filtres (P1) <!-- +2 -->
+
+Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `CampusRate` peuvent effectuer des requêtes vers celui-ci. Toute autre source sera rejetée comme ceci:
+```json
+{
+  "type": "locations",
+  "title": "Internal Server Error",
+  "status": 500,
+  "detail": "An unexpected error occurred",
+  "instance": "/api/v1/locations"
+}
+```
 
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/37
 - Commit: https://github.com/KevinEJean/camp_api/pull/37/changes/55359bbf42c00cd67266c78e516b34449473baa3
@@ -282,23 +293,67 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Sélection explicite des propriétés modifiables (P2) <!-- +2 -->
 
-> A implementé dans le future
-<!-- 
+Les constantes `_id` et `placeId` ne sont pas modifables parce que:
+
+- modifier une constante risque de briser l'indexation de mongoDB et est généralement une mauvaise pratiques;
+- ils sont auto-générés par le serveur, donc pas besoin de les modifier (API CampusRate).
+
+#### Données modifiables des emplacements
+
+| Variables | Modifiable | Raisonement |
+|---|---|---|
+| name | Oui | Il est possible qu'elle soit mal écrite lors de sa creation. |
+| description | Oui | Donner la chance d'ajouter / retirer des détails sur l'emplacements. |
+| category | Non | Un emplacement ne change jamais de categorie / fonctionnalité. |
+| address | Oui | Il est moins probable qu'une addresse change, cependant il est possible qu'elle soit mal écrite lors de sa creation. |
+| services | Oui | Il ce peut qu'il ajoutes des services après une construction. |
+| status | Oui | Il est très probable qu'il devient fermé en raison de construction. |
+
+#### Données modifiables des appréciations
+
+| Variables | Modifiable | Raisonement |
+|---|---|---|
+| authorName | Non | Afin de faciliter la modération et limiter les privilèges clients. |
+| rating | Oui | Donner la chance d'ajuster le score. |
+| comment | Oui | Il ce peut qu'une revue soit erroné ou l'autheur desir d'ajuster son commentaire. |
 
 - Pull Request: <lien> 
 - Commit: <lien> 
 
--->
 ---
 
-### Journalisatoin des opérations (L1) <!-- +3 -->
+### Journalisation des opérations (L1) <!-- +3 -->
+
+Exemple de log (dans le `terminal`):
+```bash
+[Nest] 25688  - 10/12/2026, 7:04:54 PM     LOG [RequestLoggerMiddleware] GET /api/v1/locations
+[Nest] 25688  - 10/12/2026, 7:04:54 PM     LOG [ExecutionTimeInterceptor] GET /api/v1/locations - 75 ms
+```
+
+Dans le fichier `log/allRequests.log`:
+```json
+{"level": "info", "message": "GET /api/v1/locations", "timestamp": "2026-10-12T23:04:54.795Z"}
+```
 
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/35
 - Commit: https://github.com/KevinEJean/camp_api/pull/35/changes#diff-4fab5baaca5c14d2de62d8d2fceef376ddddcc8e9509d86cfa5643f51b89ce3d
 
 ---
 
-### Journalisatoin des erreurs (L2) <!-- +3 -->
+### Journalisation des erreurs (L2) <!-- +3 -->
+
+Exemple de log (dans le `terminal`):
+```json
+{
+  "level": "warn",
+  "message": "Cannot GET /api/v1/locationss",
+  "method": "GET",
+  "path": "/v1/locationss",
+  "possibleSolution": "The requested resource was not found. Verify the ID, URL or Method is correct and that the resource has not been deleted.",
+  "statusCode": 404,
+  "timestamp": "2026-10-12T23:12:14.660Z"
+}
+```
 
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/57
 - Commit: https://github.com/KevinEJean/camp_api/pull/57/changes/e3b836c8921193b16d041a751ca351e035e13ed2
@@ -307,7 +362,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Autorisation RBAC (A2) <!-- +5 -->
 
-> A implementé dans le future
+> À implémenter dans le futur
 <!-- 
 
 - Pull Request: <lien> 

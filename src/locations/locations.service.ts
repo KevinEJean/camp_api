@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { LocationsCreateDto } from './dto/create-locations.dto.js';
@@ -64,8 +64,7 @@ export class LocationsService {
     async update(id: string, dto: Partial<LocationsUpdateDto>) {
         const isEmptyRequest = (
             !dto?.name && 
-            !dto?.description && 
-            !dto?.category && 
+            !dto?.description &&
             !dto?.address && 
             !dto?.services && 
             !dto?.status
