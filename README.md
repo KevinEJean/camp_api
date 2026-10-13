@@ -23,7 +23,8 @@ API REST de gestion de données et de services liée au campus.
 - Supertest;
 - ESLint;
 - Prettier;
-- MongoDB.
+- MongoDB;
+- [Permit.io](https://www.permit.io/rbac).
 
 ## Prérequis
 
@@ -216,7 +217,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 - **Persistance** : les données survivent aux redémarrages et aux redéploiements;
 - **Aucune installation locale** : seule la variable `MONGO_URI` est nécessaire.
 
-## Fonctionnalités optionnelles implémentées <!-- 8 / 30 -->
+## Fonctionnalités optionnelles implémentées
 
 ### Ajouter du *rate limiting* (H1) <!-- +4 -->
 
@@ -317,8 +318,8 @@ Les constantes `_id` et `placeId` ne sont pas modifables parce que:
 | rating | Oui | Donner la chance d'ajuster le score. |
 | comment | Oui | Il ce peut qu'une revue soit erroné ou l'autheur desir d'ajuster son commentaire. |
 
-- Pull Request: <lien> 
-- Commit: <lien> 
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/62
+- Commit: https://github.com/KevinEJean/camp_api/pull/62/changes/03d1de2fd0e4e15daeec5830c2115c62268452cc
 
 ---
 
@@ -362,13 +363,25 @@ Exemple de log (dans le `terminal`):
 
 ### Autorisation RBAC (A2) <!-- +5 -->
 
-> À implémenter dans le futur
-<!-- 
+Pas besoin d'authentification pour lire `(GET api/v1/locations && api/v1/ratings)` toutes les emplacements et appréciations. 
 
-- Pull Request: <lien> 
-- Commit: <lien> 
+#### USER
 
--->
+- Créer une appréciation;
+- Lire une de ses appréciations;
+- Modifier une de ses appréciations, avec l'attribut: `authorName`;
+- Supprimer une de ses appréciations, avec l'attribut: `authorName`.
+
+#### ADMIN
+
+- Créer un emplacement;
+- Lire un emplacement et une appréciation;
+- Modifier un emplacement et une appréciation;
+- Supprimer un emplacement et une appréciation.
+
+- Pull Request: 
+- Commit: 
+
 ---
 
 ## Structure du projet
