@@ -1,4 +1,4 @@
-# CampusRate API - v1.0.2
+# CampusRate API - v1.1.2
 
 API REST de gestion de données et de services liée au campus.
 
@@ -58,15 +58,54 @@ npm ls # vérifier l'installation des dépendances
 
 ## Configuration
 
-L’application attend la variable d’environnement suivante dans le fichier `.env.<NODE_ENV>`:
+L’application attend la variable d’environnement suivante dans le fichier `.env.<NODE_ENV>`.
 
 | Variable | Obligatoire | Description | Exemple local |
 |---|---|---|---|
-| `PORT` | Oui | Port d’écoute du serveur HTTP | `3000` |
+| `JWT_SECRET` | Oui | Authentification avec JWT | `"<hash>"` |
+| `MONGO_URI` | Oui | Cluster d'une base de données MongoDB | `"mongodb+srv://<username>:<password>@<cluster>/?<dbName>"` |
 | `NODE_ENV` | Oui | Fichier `.env` à utiliser | `"development"` |
-| `MONGO_URI` | Oui | Cluster d'une base de données MongoDB | `"mongodb+srv://<username>:<password>@<cluster>/?appName=Cluster-dev"` |
+| `PERMIT_IO_TOKEN` | Oui | Autorisation avec RBAC | `"permit_key_<hash>"` |
+| `PORT` | Oui | Port d’écoute du serveur HTTP | `3000` |
 
-Créer un fichier `.env` :
+#### Obtenir une clée pour `JWT_SECRET` :
+
+```bash
+node -e "console.log(require('crypto').randomBytes64 ? '' : require('crypto').randomBytes(64).toString('hex'))"
+```
+ou
+```bash
+openssl rand -hex 64
+```
+
+#### Obtenir les crédentiels pour `MONGO_URI` :
+
+1. Créer un compte (ou se connecter) sur [MongoDB Atlas](https://cloud.mongodb.com).
+2. Créer un projet, puis un cluster (l'offre gratuite **M0** suffit).
+3. Dans **Database Access**, cliquer sur **Add New Database User** :
+   - choisir l'authentification par mot de passe ;
+   - saisir un nom d'utilisateur et un mot de passe (ou utiliser **Autogenerate Secure Password**) ;
+   - donner le rôle **Read and write to any database** ;
+   - NOTER LE MOT DE PASSE, il ne sera plus affiché ensuite.
+4. Dans **Network Access**, cliquer sur **Add IP Address** et ajouter votre adresse IP actuelle (**Add Current IP Address**).
+5. Dans **Database**, cliquer sur **Connect** sur votre cluster, puis **Drivers**, et copier la chaîne de connexion.
+6. Coller cette chaîne de connexion dans la variable `MONGO_URI` du fichier `.env` de votre choix.
+
+ou me contacter et indiquer l'addresse IP privée de votre machine:
+```text
+2233405@cegepmv.ca
+```
+
+#### Obtenir une clée pour `PERMIT_IO_TOKEN` :
+
+Suivre le guide complet de `Permit.io`: https://www.permit.io/blog/how-to-protect-a-url-inside-a-nestjs-app-using-rbac-authorization
+
+ou me contacter:
+```text
+2233405@cegepmv.ca
+```
+
+#### Créer un fichier `.env` :
 
 ```bash
 cp .env.example .env.development
@@ -81,7 +120,7 @@ cp .env.example .env.development
 npm run start:dev
 ```
 
-### (Production)
+### Production
 
 ```bash
 npm run build
@@ -105,6 +144,13 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste technique
 | Méthode | Route | Statut attendu | Description |
 |---|---|---:|---|
 | `GET` | `/api/v1/health` | `200 OK` | Vérifie l’état du service |
+
+### Authentification
+
+| Méthode | Route | Statut attendu | Description |
+|---|---|---:|---|
+| `POST` | `/api/v1/login` | `201 Created` | S'authentifier pour accéder au service |
+| `POST` | `/api/v1/signin` | `201 Created` | Créer un utilisateur pour s'authentifier |
 
 ### Emplacements
 
@@ -230,50 +276,6 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 -->
 ---
 
-### Expliquer correctement le rôle de HTTPS dans le README (T1) <!-- +1 -->
-
-> À implémenter dans le futur
-<!-- 
-
-- Pull Request: <lien> 
-- Commit: <lien> 
-
--->
----
-
-### Faire fonctionner `CampusRate` localement en HTTPS (T2) <!-- +5 -->
-
-> À implémenter dans le futur
-<!-- 
-
-- Pull Request: <lien> 
-- Commit: <lien> 
-
--->
----
-
-### Générer et utiliser un certificat local autosigné (T3) <!-- +2 -->
-
-> À implémenter dans le futur
-<!-- 
-
-- Pull Request: <lien> 
-- Commit: <lien> 
-
--->
----
-
-### Mettre en place une redirection HTTP -> HTTPS (T4) <!-- +2 -->
-
-> À implémenter dans le futur
-<!-- 
-
-- Pull Request: <lien> 
-- Commit: <lien> 
-
--->
----
-
 ### Utiliser une *allowList* explicite de filtres (P1) <!-- +2 -->
 
 Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `CampusRate` peuvent effectuer des requêtes vers celui-ci. Toute autre source sera rejetée comme ceci:
@@ -361,27 +363,93 @@ Exemple de log (dans le `terminal`):
 
 ---
 
+### Authentification avec JWT (A1) <!-- +5 -->
+
+#### Sécurité `Bearer` (authentification JWT)
+
+L'API protège ses routes avec un jeton **JWT** envoyé dans l'en-tête `Authorization` selon le schéma `Bearer`. Par défaut, **toutes les routes exigent un jeton valide**, sauf celles marquées `@Public()` (actuellement `POST api/v1/auth/signin`, `POST api/v1/auth/login` et `GET api/v1/health`). Cette fonctionnalité est combinée avec l'*`Autorisation RBAC (A2)`*. D'abord, le serveur vérifie que la requête contient un jeton valide (signature correcte et jeton non expiré), puis il vérifie que l'utilisateur a la permission d'effectuer l'action demandée.
+
+#### Test
+
+1. Créer un utilisateur `(POST /api/v1/signin)`;
+2. S'authentifier `(POST /api/v1/login)`;
+  - un `token` sera retourné en réponse, inserer celui-ci dans **Authorization** (îcone vert): 
+  ```
+    Authorization: Bearer <access_token>
+  ```
+3. Exécuter des requêtes et tester les règles d'autorisation de `RBAC`.
+
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/65
+- Commit: https://github.com/KevinEJean/camp_api/pull/65/changes/aaed0a1b8ab0d88bc726a72ebf50781e083703b7
+
+---
+
 ### Autorisation RBAC (A2) <!-- +5 -->
 
-Pas besoin d'authentification pour lire `(GET api/v1/locations && api/v1/ratings)` toutes les emplacements et appréciations. 
+Pas besoin d'autorisation pour lire toutes les emplacements et appréciations `(GET api/v1/locations && api/v1/ratings)`.
 
-#### USER
-
-- Créer une appréciation;
-- Lire une de ses appréciations;
-- Modifier une de ses appréciations, avec l'attribut: `authorName`;
-- Supprimer une de ses appréciations, avec l'attribut: `authorName`.
-
-#### ADMIN
-
-- Créer un emplacement;
-- Lire un emplacement et une appréciation;
-- Modifier un emplacement et une appréciation;
-- Supprimer un emplacement et une appréciation.
+| Action | Autorisation `ADMIN` | Autorisation `USER` |
+|---|---|---|
+| Lire un emplacement par id | Oui | Oui |
+| Créer un emplacement | Oui | Non |
+| Modifier un emplacement | Oui | Non |
+| Supprimer un emplacement | Oui | Non |
+| Lire une appréciation par id | Oui | Oui |
+| Créer une appréciation | Oui | Oui |
+| Modifier une appréciation | Oui | Non |
+| Supprimer une appréciation | Oui | Non |
+| Lire un utilisateur par id | Oui | Non |
+| Créer un utilisateur | Oui | Non |
+| Modifier un utilisateur | Oui | Non |
+| Supprimer un utilisateur | Oui | Non |
 
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/63
 - Commit: https://github.com/KevinEJean/camp_api/pull/63/changes/e4d2c7d1ad0cbb07b7336fc520c9ba3054967995
 
+---
+
+### Expliquer correctement le rôle de HTTPS dans le README (T1) <!-- +1 -->
+
+> À implémenter dans le futur
+<!-- 
+
+- Pull Request: <lien> 
+- Commit: <lien> 
+
+-->
+---
+
+### Faire fonctionner `CampusRate` localement en HTTPS (T2) <!-- +5 -->
+
+> À implémenter dans le futur
+<!-- 
+
+- Pull Request: <lien> 
+- Commit: <lien> 
+
+-->
+---
+
+### Générer et utiliser un certificat local autosigné (T3) <!-- +2 -->
+
+> À implémenter dans le futur
+<!-- 
+
+- Pull Request: <lien> 
+- Commit: <lien> 
+
+-->
+---
+
+### Mettre en place une redirection HTTP -> HTTPS (T4) <!-- +2 -->
+
+> À implémenter dans le futur
+<!-- 
+
+- Pull Request: <lien> 
+- Commit: <lien> 
+
+-->
 ---
 
 ## Structure du projet
