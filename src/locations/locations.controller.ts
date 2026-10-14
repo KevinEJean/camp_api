@@ -1,12 +1,15 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiResponse, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiResponse, ApiOperation, ApiParam, ApiBody, ApiBearerAuth, ApiUnauthorizedResponse, ApiTags } from '@nestjs/swagger';
 import { LocationsResponseDto } from './dto/response-locations.dto.js';
 import { LocationsCreateDto } from './dto/create-locations.dto.js';
 import { LocationsService } from './locations.service.js';
 import { LocationsUpdateDto } from './dto/update-locations.dto.js';
 import { Location } from './schemas/locations.schema.js';
-import { PermissionsGuard, RequirePermission } from '../auth/permission.gard.js';
+import { PermissionsGuard, RequirePermission } from '../auth/guard/permission.guard.js';
 
+@ApiTags('Emplacements')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Jeton JWT manquant, invalide ou expiré.' })
 @Controller('locations')
 export class LocationsController {
 

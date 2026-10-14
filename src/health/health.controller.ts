@@ -1,9 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { Public } from '../auth/guard/jwt-auth.guard.js';
 
 @Controller('health')
 export class HealthController {
 
+    @Public()
     @Get()
     @ApiOperation({
         summary: "Vérifier l'état de l'API",

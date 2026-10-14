@@ -18,6 +18,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         var type = "about:blank";
         if (request.url.includes("locations")) type = "locations";
         else if (request.url.includes("ratings")) type = "ratings";
+        else if (request.url.includes("auth")) type = "auth";
 
         const problemDetails: ExceptionsDto = {
             type: type,
