@@ -1,5 +1,4 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Category } from "../enums/category.enum.js";
 import { Status } from "../enums/status.enum.js";
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
