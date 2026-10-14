@@ -11,6 +11,8 @@ import { AuthModule } from './auth/auth.module.js';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard.js';
 import { PermissionsGuard } from './auth/guard/permission.guard.js';
 import { PermitModule } from './users/permit.module.js';
+import { AppService } from './app.service.js';
+import { AppController } from './app.controller.js';
 import Joi from 'joi';
 
 @Module({
@@ -42,9 +44,11 @@ import Joi from 'joi';
     LocationsModule,
     RatingsModule,
   ],
+  controllers: [AppController],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: PermissionsGuard },
+    AppService,
   ]
 })
 export class AppModule implements NestModule {
