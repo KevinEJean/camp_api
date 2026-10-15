@@ -10,10 +10,6 @@ API REST de gestion de données et de services liée au campus.
 
 ou 
 
-[Lien Youtu.be](https://youtu.be/puwBftVNqSM)
-
-ou
-
 [Lien Youtube](https://www.youtube.com/watch?v=puwBftVNqSM)
 
 ## Fonctionnalités
