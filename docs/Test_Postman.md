@@ -10,6 +10,29 @@ GET http://localhost:3000/api/v1/health
 
 ---
 
+## Authentification
+
+```bash
+POST http://localhost:3000/api/v1/login
+```
+{
+  "name": "John Doe",
+  "password": "MotDePasse123!"
+}
+
+---
+
+```bash
+POST http://localhost:3000/api/v1/signin
+```
+{
+  "name": "John Doe",
+  "password": "MotDePasse123!",
+  "passwordConfirmation": "MotDePasse123!"
+}
+
+---
+
 ## Locations
 
 ```bash

@@ -153,8 +153,8 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste technique
 
 | Méthode | Route | Statut attendu | Description |
 |---|---|---:|---|
-| `POST` | `/api/v1/login` | `201 Created` | S'authentifier pour accéder au service |
-| `POST` | `/api/v1/signin` | `200 OK` | Créer un utilisateur pour s'authentifier |
+| `POST` | `/api/v1/auth/login` | `201 Created` | S'authentifier pour accéder au service |
+| `POST` | `/api/v1/auth/signin` | `200 OK` | Créer un utilisateur pour s'authentifier |
 
 ### Emplacements
 
@@ -381,8 +381,8 @@ L'API protège ses routes avec un jeton **JWT** envoyé dans l'en-tête `Authori
 
 #### Tester privilèges `USER`
 
-1. Créer un utilisateur `(POST /api/v1/signin)`;
-2. S'authentifier `(POST /api/v1/login)`;
+1. Créer un utilisateur `(POST /api/v1/auth/signin)`;
+2. S'authentifier `(POST /api/v1/auth/login)`;
   - un `token` sera retourné en réponse, insérer celui-ci dans **Authorization** (icône verte): 
   ```
     Authorization: Bearer <access_token>
