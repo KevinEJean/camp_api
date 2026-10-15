@@ -4,6 +4,10 @@ API REST de gestion de données et de services liée au campus.
 
 `camp-api` fournit un point d’entrée central pour enregistrer, consulter et exploiter les informations nécessaires. Le projet est développé avec [NestJS](https://nestjs.com/) et TypeScript.
 
+## Démo
+
+> Video ici
+
 ## Fonctionnalités
 
 - vérification de l’état du service;
@@ -150,7 +154,7 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste technique
 | Méthode | Route | Statut attendu | Description |
 |---|---|---:|---|
 | `POST` | `/api/v1/login` | `201 Created` | S'authentifier pour accéder au service |
-| `POST` | `/api/v1/signin` | `201 Created` | Créer un utilisateur pour s'authentifier |
+| `POST` | `/api/v1/signin` | `200 OK` | Créer un utilisateur pour s'authentifier |
 
 ### Emplacements
 
@@ -250,9 +254,11 @@ curl -i -X POST http://localhost:3000/api/v1/locations ^
   --data-binary @location.json
 ```
 
-Attribut facultatif :
-- services = [ ] (valeur par défaut)
-- status = "ACTIVE" (valeur par défaut) ou "TEMPORARILY_CLOSED" ou "CLOSED"
+#### Attribut facultatif :
+| Attribut | Règle |
+|---|---|
+| services | [`0 à 10 éléments de chaîne de caractère`]
+| status | `"ACTIVE"`, `"TEMPORARILY_CLOSED"` ou `"CLOSED"`
 
 ## Persistance des données
 
@@ -278,7 +284,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Utiliser une *allowList* explicite de filtres (P1) <!-- +2 -->
 
-Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `CampusRate` peuvent effectuer des requêtes vers celui-ci. Toute autre source sera rejetée comme ceci:
+Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `CampusRate` ET est inclus dans les listes d'IP autorisé par le `cluster mongoDB` peuvent effectuer des requêtes vers l"API. Toute autre source sera rejetée comme ceci:
 ```json
 {
   "type": "locations",
@@ -299,7 +305,7 @@ Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `Ca
 Les constantes `_id` et `placeId` ne sont pas modifables parce que:
 
 - modifier une constante risque de briser l'indexation de mongoDB et est généralement une mauvaise pratiques;
-- ils sont auto-générés par le serveur, donc pas besoin de les modifier (API CampusRate).
+- ils sont auto-générés par le serveur, donc pas besoin de les modifier.
 
 #### Données modifiables des emplacements
 
@@ -327,6 +333,8 @@ Les constantes `_id` et `placeId` ne sont pas modifables parce que:
 
 ### Journalisation des opérations (L1) <!-- +3 -->
 
+Chaque fois que le serveur reçoit une requête, elle est documentée et stockée dans un fichier log (`logs/allRequests.log`). Pour faciliter l'analyse du trafic, la modération, le support et la maintenance de l'API, des informations sont affichées dans le terminal.
+
 Exemple de log (dans le `terminal`):
 ```bash
 [Nest] 25688  - 10/12/2026, 7:04:54 PM     LOG [RequestLoggerMiddleware] GET /api/v1/locations
@@ -344,6 +352,8 @@ Dans le fichier `log/allRequests.log`:
 ---
 
 ### Journalisation des erreurs (L2) <!-- +3 -->
+
+Seules les requêtes valides étaient documentées par les loggers (winston, interceptor, middleware). Désormais, si une requête invalide est reçue ou envoyée (réponse du serveur), elle est affichée dans le terminal pour faciliter la maintenance et le support.
 
 Exemple de log (dans le `terminal`):
 ```json
@@ -365,11 +375,11 @@ Exemple de log (dans le `terminal`):
 
 ### Authentification avec JWT (A1) <!-- +5 -->
 
-#### Sécurité `Bearer` (authentification JWT)
+#### Sécurité `Bearer`
 
 L'API protège ses routes avec un jeton **JWT** envoyé dans l'en-tête `Authorization` selon le schéma `Bearer`. Par défaut, **toutes les routes exigent un jeton valide**, sauf celles marquées `@Public()` (actuellement `POST api/v1/auth/signin`, `POST api/v1/auth/login` et `GET api/v1/health`). Cette fonctionnalité est combinée avec l'*`Autorisation RBAC (A2)`*. D'abord, le serveur vérifie que la requête contient un jeton valide (signature correcte et jeton non expiré), puis il vérifie que l'utilisateur a la permission d'effectuer l'action demandée.
 
-#### Test
+#### Tester privilèges `USER`
 
 1. Créer un utilisateur `(POST /api/v1/signin)`;
 2. S'authentifier `(POST /api/v1/login)`;
@@ -379,6 +389,8 @@ L'API protège ses routes avec un jeton **JWT** envoyé dans l'en-tête `Authori
   ```
 3. Exécuter des requêtes et tester les règles d'autorisation de `RBAC`.
 
+> Il n'est pas possible de tester d'autre privilèges à ce moment. Cela est concerner dans la courte vidéo.
+
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/65
 - Commit: https://github.com/KevinEJean/camp_api/pull/65/changes/aaed0a1b8ab0d88bc726a72ebf50781e083703b7
 
@@ -386,22 +398,22 @@ L'API protège ses routes avec un jeton **JWT** envoyé dans l'en-tête `Authori
 
 ### Autorisation RBAC (A2) <!-- +5 -->
 
-Pas besoin d'autorisation pour lire toutes les emplacements et appréciations `(GET api/v1/locations && api/v1/ratings)`.
+Pas besoin d'autorisation pour lire toutes les emplacements et appréciations `(GET api/v1/locations && api/v1/ratings)`. Présentement, les clients (rôle : `USER`) n'ont pas le droit de modifier ou de supprimer leurs revues, parce qu'il n'y a pas encore moyen d'associer une appréciation à un usager. Il s'agit d'une fonctionnalité qui devrait être implémentée dans le futur. Aussi, pour préserver l'intégrité de l'API, il est impossible de créer un utilisateur ayant des droits autres que `USER`.
 
-| Action | Autorisation `ADMIN` | Autorisation `USER` |
-|---|---|---|
-| Lire un emplacement par id | Oui | Oui |
-| Créer un emplacement | Oui | Non |
-| Modifier un emplacement | Oui | Non |
-| Supprimer un emplacement | Oui | Non |
-| Lire une appréciation par id | Oui | Oui |
-| Créer une appréciation | Oui | Oui |
-| Modifier une appréciation | Oui | Non |
-| Supprimer une appréciation | Oui | Non |
-| Lire un utilisateur par id | Oui | Non |
-| Créer un utilisateur | Oui | Non |
-| Modifier un utilisateur | Oui | Non |
-| Supprimer un utilisateur | Oui | Non |
+| Action | Autorisation `ADMIN` | Autorisation `PARTNER` | Autorisation `USER` |
+|---|---|---|---|
+| Lire un emplacement par id | Oui | Oui | Oui |
+| Créer un emplacement | Oui | Oui | Non |
+| Modifier un emplacement | Oui | Non | Non |
+| Supprimer un emplacement | Oui | Non | Non |
+| Lire une appréciation par id | Oui | Oui |  Oui |
+| Créer une appréciation | Oui | Non | Oui |
+| Modifier une appréciation | Oui | Non | Non |
+| Supprimer une appréciation | Oui | Non | Non |
+| Lire un utilisateur par id | Oui | Non | Non |
+| Créer un utilisateur | Oui | Non | Non |
+| Modifier un utilisateur | Oui | Non | Non |
+| Supprimer un utilisateur | Oui | Non | Non |
 
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/63
 - Commit: https://github.com/KevinEJean/camp_api/pull/63/changes/e4d2c7d1ad0cbb07b7336fc520c9ba3054967995
@@ -460,6 +472,17 @@ src/
 ├── app.module.ts
 ├── app.service.ts
 ├── main.ts
+├── permit.module.ts
+├── auth/
+│   ├── auth.controller.ts
+│   ├── auth.module.ts
+│   ├── auth.service.ts
+│   ├── dto/
+│   │   ├── login.dto.ts
+│   │   ├── signin.dto.ts
+│   └── guard/
+│       ├── jwt-auth.guard.ts
+│       └── permission.guard.ts
 ├── configs/
 │   ├── configure-swagger.ts
 │   ├── configure-winston.ts
@@ -508,6 +531,18 @@ src/
 │   │   └── ratings.entity.ts
 │   └── schemas/
 │       └── ratings.schema.ts
+├── users/
+│   ├── users.controller.ts
+│   ├── users.module.ts
+│   ├── users.repository.ts
+│   ├── users.service.ts
+│   ├── dto/
+│   │   ├── create-users.dto.ts
+│   │   └── response-users.dto.ts
+│   ├── entities/
+│   │   └── users.entity.ts
+│   └── schemas/
+│       └── users.schema.ts
 └── utils/
     └── utils.ts
 ```

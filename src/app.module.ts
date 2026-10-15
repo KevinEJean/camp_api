@@ -10,7 +10,7 @@ import { RequestLoggerMiddleware } from './exceptions/middleware/request-logger.
 import { AuthModule } from './auth/auth.module.js';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard.js';
 import { PermissionsGuard } from './auth/guard/permission.guard.js';
-import { PermitModule } from './users/permit.module.js';
+import { PermitModule } from './permit.module.js';
 import { AppService } from './app.service.js';
 import { AppController } from './app.controller.js';
 import Joi from 'joi';
