@@ -1,4 +1,4 @@
-import { ArrayMaxSize, IsArray, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, Matches } from 'class-validator';
 import { Status } from '../enums/status.enum.js';
 import { Category } from '../enums/category.enum.js';
 import Util from '../../utils/utils.js';
