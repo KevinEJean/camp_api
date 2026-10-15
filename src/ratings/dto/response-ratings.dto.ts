@@ -1,5 +1,3 @@
-import { IsString, IsNotEmpty, IsNumber, Min, Max, IsMongoId } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 import { Locations } from "../../locations/entities/locations.entity.js";
 
 export class RatingsResponseDto {

@@ -1,5 +1,4 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Category } from "../enums/category.enum.js";
 import { Status } from "../enums/status.enum.js";
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
@@ -19,14 +18,6 @@ export class LocationsUpdateDto {
     @IsOptional()
     @IsString()
     description?: string;
-
-    @ApiPropertyOptional({
-        description: "Catégorie de l'emplacement",
-        enum: Category,
-    })
-    @IsOptional()
-    @IsString()
-    category?: Category;
 
     @ApiPropertyOptional({
         description: "Adresse physique de l'emplacement",

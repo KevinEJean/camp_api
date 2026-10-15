@@ -11,28 +11,28 @@ export class Location {
     @Prop({ type: String })
     _id: string;
 
-    @Prop({ required: true, unique: true })
+    @Prop({ type: String, required: true, unique: true })
     name!: string;
 
-    @Prop({ required: true })
+    @Prop({ type: String, required: true })
     description!: string;
 
-    @Prop({ required: true })
+    @Prop({ type: String, required: true, enum: Object.values(Category) })
     category!: Category;
 
-    @Prop({ required: true })
+    @Prop({ type: String, required: true })
     address!: string;
 
-    @Prop({ required: false, default: [] })
+    @Prop({ type: String, default: [] })
     services?: string[];
 
-    @Prop({ required: false, default: Status.ACTIVE })
+    @Prop({ type: String, default: Status.ACTIVE, enum: Object.values(Status) })
     status?: Status;
 
-    @Prop({ default: null })
-    averageRating: number;
+    @Prop({ type: Number, default: null })
+    averageRating: number | null;
 
-    @Prop({ default: 0 })
+    @Prop({ type: Number, default: 0 })
     reviewCount: number;
 }
 

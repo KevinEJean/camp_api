@@ -1,11 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiResponse, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiResponse, ApiOperation, ApiParam, ApiBody, ApiBearerAuth, ApiUnauthorizedResponse, ApiTags } from '@nestjs/swagger';
 import { LocationsResponseDto } from './dto/response-locations.dto.js';
 import { LocationsCreateDto } from './dto/create-locations.dto.js';
 import { LocationsService } from './locations.service.js';
 import { LocationsUpdateDto } from './dto/update-locations.dto.js';
 import { Location } from './schemas/locations.schema.js';
+import { PermissionsGuard, RequirePermission } from '../auth/guard/permission.guard.js';
 
+@ApiTags('Emplacements')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Jeton JWT manquant, invalide ou expiré.' })
 @Controller('locations')
 export class LocationsController {
 
@@ -25,6 +29,8 @@ export class LocationsController {
         return this.service.findAll();
     }
 
+    @UseGuards(PermissionsGuard)
+    @RequirePermission('read', 'locations')
     @Get(':id')
     @ApiOperation({
         summary: 'Récupérer un emplacement par son ID', 
@@ -48,6 +54,8 @@ export class LocationsController {
         return this.service.findOne(id);
     }
 
+    @UseGuards(PermissionsGuard)
+    @RequirePermission('create', 'locations')
     @Post()
     @ApiOperation({
         summary: 'Créer un nouvel emplacement', 
@@ -69,6 +77,8 @@ export class LocationsController {
         return this.service.create(dto);
     }
 
+    @UseGuards(PermissionsGuard)
+    @RequirePermission('update', 'locations')
     @Patch(':id')
     @ApiOperation({
         summary: 'Mettre à jour un emplacement existant', 
@@ -98,6 +108,8 @@ export class LocationsController {
         return this.service.update(id, dto);
     }
 
+    @UseGuards(PermissionsGuard)
+    @RequirePermission('delete', 'locations')
     @Delete(':id')
     @ApiOperation({
         summary: 'Supprimer un emplacement', 
