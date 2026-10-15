@@ -74,7 +74,7 @@ L’application attend la variable d’environnement suivante dans le fichier `.
 | `MONGO_URI` | Oui | Cluster d'une base de données MongoDB | `"mongodb+srv://<username>:<password>@<cluster>/?<dbName>"` |
 | `NODE_ENV` | Oui | Fichier `.env` à utiliser | `"development"` |
 | `PERMIT_IO_TOKEN` | Oui | Autorisation avec RBAC | `"permit_key_<hash>"` |
-| `PORT` | Oui | Port d’écoute du serveur HTTP | `3000` |
+| `PORT` | Non | Port d’écoute du serveur HTTP | `3000` |
 
 #### Obtenir une clé pour `JWT_SECRET` :
 
