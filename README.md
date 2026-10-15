@@ -6,7 +6,7 @@ API REST de gestion de données et de services liée au campus.
 
 ## Démo
 
-> Video ici
+[!](/docs/videos/2233405_demo-tp2.mp4)
 
 ## Fonctionnalités
 
