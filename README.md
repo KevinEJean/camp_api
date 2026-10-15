@@ -72,7 +72,7 @@ L’application attend la variable d’environnement suivante dans le fichier `.
 | `PERMIT_IO_TOKEN` | Oui | Autorisation avec RBAC | `"permit_key_<hash>"` |
 | `PORT` | Oui | Port d’écoute du serveur HTTP | `3000` |
 
-#### Obtenir une clée pour `JWT_SECRET` :
+#### Obtenir une clé pour `JWT_SECRET` :
 
 ```bash
 node -e "console.log(require('crypto').randomBytes64 ? '' : require('crypto').randomBytes(64).toString('hex'))"
@@ -82,7 +82,7 @@ ou
 openssl rand -hex 64
 ```
 
-#### Obtenir les crédentiels pour `MONGO_URI` :
+#### Obtenir les identifiants pour `MONGO_URI` :
 
 1. Créer un compte (ou se connecter) sur [MongoDB Atlas](https://cloud.mongodb.com).
 2. Créer un projet, puis un cluster (l'offre gratuite **M0** suffit).
@@ -95,12 +95,12 @@ openssl rand -hex 64
 5. Dans **Database**, cliquer sur **Connect** sur votre cluster, puis **Drivers**, et copier la chaîne de connexion.
 6. Coller cette chaîne de connexion dans la variable `MONGO_URI` du fichier `.env` de votre choix.
 
-ou me contacter et indiquer l'addresse IP privée de votre machine:
+ou me contacter et indiquer l'adresse IP privée de votre machine:
 ```text
 2233405@cegepmv.ca
 ```
 
-#### Obtenir une clée pour `PERMIT_IO_TOKEN` :
+#### Obtenir une clé pour `PERMIT_IO_TOKEN` :
 
 Suivre le guide complet de `Permit.io`: https://www.permit.io/blog/how-to-protect-a-url-inside-a-nestjs-app-using-rbac-authorization
 
@@ -121,14 +121,14 @@ cp .env.example .env.development
 ### Développement
 
 ```bash
-npm run start:dev
+npm run start: dev
 ```
 
 ### Production
 
 ```bash
 npm run build
-npm run start:prod
+npm run start: prod
 ```
 
 Avec `PORT=3000` (port par défaut), l’API est accessible à l’adresse suivante :
@@ -257,7 +257,7 @@ curl -i -X POST http://localhost:3000/api/v1/locations ^
 #### Attribut facultatif :
 | Attribut | Règle |
 |---|---|
-| services | [`0 à 10 éléments de chaîne de caractère`]
+| services | [`0 à 10 éléments de chaîne de caractères`]
 | status | `"ACTIVE"`, `"TEMPORARILY_CLOSED"` ou `"CLOSED"`
 
 ## Persistance des données
@@ -284,7 +284,7 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 
 ### Utiliser une *allowList* explicite de filtres (P1) <!-- +2 -->
 
-Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `CampusRate` ET est inclus dans les listes d'IP autorisé par le `cluster mongoDB` peuvent effectuer des requêtes vers l"API. Toute autre source sera rejetée comme ceci:
+Uniquement les requêtes ayant l'IP privée de la machine sur laquelle tourne `CampusRate` ET qui sont incluses dans les listes d'IP autorisées par le `cluster MongoDB` peuvent effectuer des requêtes vers l'API. Toute autre source sera rejetée comme ceci:
 ```json
 {
   "type": "locations",
@@ -302,29 +302,29 @@ Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `Ca
 
 ### Sélection explicite des propriétés modifiables (P2) <!-- +2 -->
 
-Les constantes `_id` et `placeId` ne sont pas modifables parce que:
+Les constantes `_id` et `placeId` ne sont pas modifiables parce que:
 
-- modifier une constante risque de briser l'indexation de mongoDB et est généralement une mauvaise pratiques;
+- modifier une constante risque de briser l'indexation de MongoDB et est généralement une mauvaise pratique;
 - ils sont auto-générés par le serveur, donc pas besoin de les modifier.
 
 #### Données modifiables des emplacements
 
-| Variables | Modifiable | Raisonement |
+| Variables | Modifiable | Raisonnement |
 |---|---|---|
-| name | Oui | Il est possible qu'elle soit mal écrite lors de sa creation. |
-| description | Oui | Donner la chance d'ajouter / retirer des détails sur l'emplacements. |
-| category | Non | Un emplacement ne change jamais de categorie / fonctionnalité. |
-| address | Oui | Il est moins probable qu'une addresse change, cependant il est possible qu'elle soit mal écrite lors de sa creation. |
-| services | Oui | Il ce peut qu'il ajoutes des services après une construction. |
-| status | Oui | Il est très probable qu'il devient fermé en raison de construction. |
+| name | Oui | Il est possible qu'elle soit mal écrite lors de sa création. |
+| description | Oui | Donner la possibilité d'ajouter ou de retirer des détails sur les emplacements. |
+| category | Non | Un emplacement ne change jamais de catégorie / fonctionnalité. |
+| address | Oui | Il est moins probable qu'une adresse change, cependant, il est possible qu'elle soit mal écrite lors de sa création. |
+| services | Oui | Il se peut qu'il ajoute des services après la construction. |
+| status | Oui | Il est très probable qu'il devienne fermé en raison de la construction. |
 
 #### Données modifiables des appréciations
 
-| Variables | Modifiable | Raisonement |
+| Variables | Modifiable | Raisonnement |
 |---|---|---|
 | authorName | Non | Afin de faciliter la modération et limiter les privilèges clients. |
 | rating | Oui | Donner la chance d'ajuster le score. |
-| comment | Oui | Il ce peut qu'une revue soit erroné ou l'autheur desir d'ajuster son commentaire. |
+| comment | Oui | Il se peut qu'une revue soit erronée ou que l'auteur désire ajuster son commentaire. |
 
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/62
 - Commit: https://github.com/KevinEJean/camp_api/pull/62/changes/03d1de2fd0e4e15daeec5830c2115c62268452cc
@@ -377,19 +377,19 @@ Exemple de log (dans le `terminal`):
 
 #### Sécurité `Bearer`
 
-L'API protège ses routes avec un jeton **JWT** envoyé dans l'en-tête `Authorization` selon le schéma `Bearer`. Par défaut, **toutes les routes exigent un jeton valide**, sauf celles marquées `@Public()` (actuellement `POST api/v1/auth/signin`, `POST api/v1/auth/login` et `GET api/v1/health`). Cette fonctionnalité est combinée avec l'*`Autorisation RBAC (A2)`*. D'abord, le serveur vérifie que la requête contient un jeton valide (signature correcte et jeton non expiré), puis il vérifie que l'utilisateur a la permission d'effectuer l'action demandée.
+L'API protège ses routes avec un jeton **JWT** envoyé dans l'en-tête `Authorization` selon le schéma `Bearer`. Par défaut, **toutes les routes exigent un jeton valide**, sauf celles marquées `@Public()` (actuellement `POST api/v1/auth/signin`, `POST api/v1/auth/login` et `GET api/v1/health`). Cette fonctionnalité est combinée avec l’*`Autorisation RBAC (A2)`*. D'abord, le serveur vérifie que la requête contient un jeton valide (signature correcte et jeton non expiré), puis il vérifie que l'utilisateur a la permission d'effectuer l'action demandée.
 
 #### Tester privilèges `USER`
 
 1. Créer un utilisateur `(POST /api/v1/signin)`;
 2. S'authentifier `(POST /api/v1/login)`;
-  - un `token` sera retourné en réponse, inserer celui-ci dans **Authorization** (îcone vert): 
+  - un `token` sera retourné en réponse, insérer celui-ci dans **Authorization** (icône verte): 
   ```
     Authorization: Bearer <access_token>
   ```
 3. Exécuter des requêtes et tester les règles d'autorisation de `RBAC`.
 
-> Il n'est pas possible de tester d'autre privilèges à ce moment. Cela est concerner dans la courte vidéo.
+> Il n'est pas possible de tester d'autres privilèges à ce moment. Cela est mentionné dans la courte vidéo.
 
 - Pull Request: https://github.com/KevinEJean/camp_api/pull/65
 - Commit: https://github.com/KevinEJean/camp_api/pull/65/changes/aaed0a1b8ab0d88bc726a72ebf50781e083703b7
@@ -398,7 +398,7 @@ L'API protège ses routes avec un jeton **JWT** envoyé dans l'en-tête `Authori
 
 ### Autorisation RBAC (A2) <!-- +5 -->
 
-Pas besoin d'autorisation pour lire toutes les emplacements et appréciations `(GET api/v1/locations && api/v1/ratings)`. Présentement, les clients (rôle : `USER`) n'ont pas le droit de modifier ou de supprimer leurs revues, parce qu'il n'y a pas encore moyen d'associer une appréciation à un usager. Il s'agit d'une fonctionnalité qui devrait être implémentée dans le futur. Aussi, pour préserver l'intégrité de l'API, il est impossible de créer un utilisateur ayant des droits autres que `USER`.
+Pas besoin d'autorisation pour lire tous les emplacements et appréciations (`GET api/v1/locations et api/v1/ratings`). Présentement, les clients (rôle : `USER`) n'ont pas le droit de modifier ou de supprimer leurs revues, parce qu'il n'y a pas encore de moyen d'associer une appréciation à un usager. Il s'agit d'une fonctionnalité qui devrait être implémentée dans le futur. Aussi, pour préserver l'intégrité de l'API, il est impossible de créer un utilisateur ayant des droits autres que `USER`.
 
 | Action | Autorisation `ADMIN` | Autorisation `PARTNER` | Autorisation `USER` |
 |---|---|---|---|
@@ -442,7 +442,7 @@ Pas besoin d'autorisation pour lire toutes les emplacements et appréciations `(
 -->
 ---
 
-### Générer et utiliser un certificat local autosigné (T3) <!-- +2 -->
+### Générer et utiliser un certificat local auto-signé (T3) <!-- +2 -->
 
 > À implémenter dans le futur
 <!-- 
