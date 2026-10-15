@@ -1,13 +1,16 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiResponse, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiResponse, ApiOperation, ApiParam, ApiBody, ApiBearerAuth, ApiUnauthorizedResponse, ApiTags } from '@nestjs/swagger';
 import { RatingsResponseDto } from './dto/response-ratings.dto.js';
 import { RatingsCreateDto } from './dto/create-ratings.dto.js';
 import { RatingsUpdateDto } from './dto/update-ratings.dto.js';
 import { Ratings } from './entities/ratings.entity.js';
 import { RatingsService } from './ratings.service.js';
 import { Rating } from './schemas/ratings.schema.js';
-import { PermissionsGuard, RequirePermission } from '../auth/permission.gard.js';
+import { PermissionsGuard, RequirePermission } from '../auth/guard/permission.guard.js';
 
+@ApiTags('Appréciations')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Jeton JWT manquant, invalide ou expiré.' })
 @Controller('ratings')
 export class RatingsController {
 

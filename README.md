@@ -1,8 +1,12 @@
-# CampusRate API - v1.0.2
+# CampusRate API - v1.1.2
 
 API REST de gestion de données et de services liée au campus.
 
 `camp-api` fournit un point d’entrée central pour enregistrer, consulter et exploiter les informations nécessaires. Le projet est développé avec [NestJS](https://nestjs.com/) et TypeScript.
+
+## Démo
+
+> Video ici
 
 ## Fonctionnalités
 
@@ -58,15 +62,54 @@ npm ls # vérifier l'installation des dépendances
 
 ## Configuration
 
-L’application attend la variable d’environnement suivante dans le fichier `.env.<NODE_ENV>`:
+L’application attend la variable d’environnement suivante dans le fichier `.env.<NODE_ENV>`.
 
 | Variable | Obligatoire | Description | Exemple local |
 |---|---|---|---|
-| `PORT` | Oui | Port d’écoute du serveur HTTP | `3000` |
+| `JWT_SECRET` | Oui | Authentification avec JWT | `"<hash>"` |
+| `MONGO_URI` | Oui | Cluster d'une base de données MongoDB | `"mongodb+srv://<username>:<password>@<cluster>/?<dbName>"` |
 | `NODE_ENV` | Oui | Fichier `.env` à utiliser | `"development"` |
-| `MONGO_URI` | Oui | Cluster d'une base de données MongoDB | `"mongodb+srv://<username>:<password>@<cluster>/?appName=Cluster-dev"` |
+| `PERMIT_IO_TOKEN` | Oui | Autorisation avec RBAC | `"permit_key_<hash>"` |
+| `PORT` | Oui | Port d’écoute du serveur HTTP | `3000` |
 
-Créer un fichier `.env` :
+#### Obtenir une clée pour `JWT_SECRET` :
+
+```bash
+node -e "console.log(require('crypto').randomBytes64 ? '' : require('crypto').randomBytes(64).toString('hex'))"
+```
+ou
+```bash
+openssl rand -hex 64
+```
+
+#### Obtenir les crédentiels pour `MONGO_URI` :
+
+1. Créer un compte (ou se connecter) sur [MongoDB Atlas](https://cloud.mongodb.com).
+2. Créer un projet, puis un cluster (l'offre gratuite **M0** suffit).
+3. Dans **Database Access**, cliquer sur **Add New Database User** :
+   - choisir l'authentification par mot de passe ;
+   - saisir un nom d'utilisateur et un mot de passe (ou utiliser **Autogenerate Secure Password**) ;
+   - donner le rôle **Read and write to any database** ;
+   - NOTER LE MOT DE PASSE, il ne sera plus affiché ensuite.
+4. Dans **Network Access**, cliquer sur **Add IP Address** et ajouter votre adresse IP actuelle (**Add Current IP Address**).
+5. Dans **Database**, cliquer sur **Connect** sur votre cluster, puis **Drivers**, et copier la chaîne de connexion.
+6. Coller cette chaîne de connexion dans la variable `MONGO_URI` du fichier `.env` de votre choix.
+
+ou me contacter et indiquer l'addresse IP privée de votre machine:
+```text
+2233405@cegepmv.ca
+```
+
+#### Obtenir une clée pour `PERMIT_IO_TOKEN` :
+
+Suivre le guide complet de `Permit.io`: https://www.permit.io/blog/how-to-protect-a-url-inside-a-nestjs-app-using-rbac-authorization
+
+ou me contacter:
+```text
+2233405@cegepmv.ca
+```
+
+#### Créer un fichier `.env` :
 
 ```bash
 cp .env.example .env.development
@@ -81,7 +124,7 @@ cp .env.example .env.development
 npm run start:dev
 ```
 
-### (Production)
+### Production
 
 ```bash
 npm run build
@@ -105,6 +148,13 @@ Consulter la [collection Postman](docs/Test_Postman.md) pour une liste technique
 | Méthode | Route | Statut attendu | Description |
 |---|---|---:|---|
 | `GET` | `/api/v1/health` | `200 OK` | Vérifie l’état du service |
+
+### Authentification
+
+| Méthode | Route | Statut attendu | Description |
+|---|---|---:|---|
+| `POST` | `/api/v1/login` | `201 Created` | S'authentifier pour accéder au service |
+| `POST` | `/api/v1/signin` | `200 OK` | Créer un utilisateur pour s'authentifier |
 
 ### Emplacements
 
@@ -204,9 +254,11 @@ curl -i -X POST http://localhost:3000/api/v1/locations ^
   --data-binary @location.json
 ```
 
-Attribut facultatif :
-- services = [ ] (valeur par défaut)
-- status = "ACTIVE" (valeur par défaut) ou "TEMPORARILY_CLOSED" ou "CLOSED"
+#### Attribut facultatif :
+| Attribut | Règle |
+|---|---|
+| services | [`0 à 10 éléments de chaîne de caractère`]
+| status | `"ACTIVE"`, `"TEMPORARILY_CLOSED"` ou `"CLOSED"`
 
 ## Persistance des données
 
@@ -228,6 +280,144 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 - Commit: <lien> 
 
 -->
+---
+
+### Utiliser une *allowList* explicite de filtres (P1) <!-- +2 -->
+
+Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `CampusRate` ET est inclus dans les listes d'IP autorisé par le `cluster mongoDB` peuvent effectuer des requêtes vers l"API. Toute autre source sera rejetée comme ceci:
+```json
+{
+  "type": "locations",
+  "title": "Internal Server Error",
+  "status": 500,
+  "detail": "An unexpected error occurred",
+  "instance": "/api/v1/locations"
+}
+```
+
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/37
+- Commit: https://github.com/KevinEJean/camp_api/pull/37/changes/55359bbf42c00cd67266c78e516b34449473baa3
+
+---
+
+### Sélection explicite des propriétés modifiables (P2) <!-- +2 -->
+
+Les constantes `_id` et `placeId` ne sont pas modifables parce que:
+
+- modifier une constante risque de briser l'indexation de mongoDB et est généralement une mauvaise pratiques;
+- ils sont auto-générés par le serveur, donc pas besoin de les modifier.
+
+#### Données modifiables des emplacements
+
+| Variables | Modifiable | Raisonement |
+|---|---|---|
+| name | Oui | Il est possible qu'elle soit mal écrite lors de sa creation. |
+| description | Oui | Donner la chance d'ajouter / retirer des détails sur l'emplacements. |
+| category | Non | Un emplacement ne change jamais de categorie / fonctionnalité. |
+| address | Oui | Il est moins probable qu'une addresse change, cependant il est possible qu'elle soit mal écrite lors de sa creation. |
+| services | Oui | Il ce peut qu'il ajoutes des services après une construction. |
+| status | Oui | Il est très probable qu'il devient fermé en raison de construction. |
+
+#### Données modifiables des appréciations
+
+| Variables | Modifiable | Raisonement |
+|---|---|---|
+| authorName | Non | Afin de faciliter la modération et limiter les privilèges clients. |
+| rating | Oui | Donner la chance d'ajuster le score. |
+| comment | Oui | Il ce peut qu'une revue soit erroné ou l'autheur desir d'ajuster son commentaire. |
+
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/62
+- Commit: https://github.com/KevinEJean/camp_api/pull/62/changes/03d1de2fd0e4e15daeec5830c2115c62268452cc
+
+---
+
+### Journalisation des opérations (L1) <!-- +3 -->
+
+Chaque fois que le serveur reçoit une requête, elle est documentée et stockée dans un fichier log (`logs/allRequests.log`). Pour faciliter l'analyse du trafic, la modération, le support et la maintenance de l'API, des informations sont affichées dans le terminal.
+
+Exemple de log (dans le `terminal`):
+```bash
+[Nest] 25688  - 10/12/2026, 7:04:54 PM     LOG [RequestLoggerMiddleware] GET /api/v1/locations
+[Nest] 25688  - 10/12/2026, 7:04:54 PM     LOG [ExecutionTimeInterceptor] GET /api/v1/locations - 75 ms
+```
+
+Dans le fichier `log/allRequests.log`:
+```json
+{"level": "info", "message": "GET /api/v1/locations", "timestamp": "2026-10-12T23:04:54.795Z"}
+```
+
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/35
+- Commit: https://github.com/KevinEJean/camp_api/pull/35/changes#diff-4fab5baaca5c14d2de62d8d2fceef376ddddcc8e9509d86cfa5643f51b89ce3d
+
+---
+
+### Journalisation des erreurs (L2) <!-- +3 -->
+
+Seules les requêtes valides étaient documentées par les loggers (winston, interceptor, middleware). Désormais, si une requête invalide est reçue ou envoyée (réponse du serveur), elle est affichée dans le terminal pour faciliter la maintenance et le support.
+
+Exemple de log (dans le `terminal`):
+```json
+{
+  "level": "warn",
+  "message": "Cannot GET /api/v1/locationss",
+  "method": "GET",
+  "path": "/v1/locationss",
+  "possibleSolution": "The requested resource was not found. Verify the ID, URL or Method is correct and that the resource has not been deleted.",
+  "statusCode": 404,
+  "timestamp": "2026-10-12T23:12:14.660Z"
+}
+```
+
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/57
+- Commit: https://github.com/KevinEJean/camp_api/pull/57/changes/e3b836c8921193b16d041a751ca351e035e13ed2
+
+---
+
+### Authentification avec JWT (A1) <!-- +5 -->
+
+#### Sécurité `Bearer`
+
+L'API protège ses routes avec un jeton **JWT** envoyé dans l'en-tête `Authorization` selon le schéma `Bearer`. Par défaut, **toutes les routes exigent un jeton valide**, sauf celles marquées `@Public()` (actuellement `POST api/v1/auth/signin`, `POST api/v1/auth/login` et `GET api/v1/health`). Cette fonctionnalité est combinée avec l'*`Autorisation RBAC (A2)`*. D'abord, le serveur vérifie que la requête contient un jeton valide (signature correcte et jeton non expiré), puis il vérifie que l'utilisateur a la permission d'effectuer l'action demandée.
+
+#### Tester privilèges `USER`
+
+1. Créer un utilisateur `(POST /api/v1/signin)`;
+2. S'authentifier `(POST /api/v1/login)`;
+  - un `token` sera retourné en réponse, inserer celui-ci dans **Authorization** (îcone vert): 
+  ```
+    Authorization: Bearer <access_token>
+  ```
+3. Exécuter des requêtes et tester les règles d'autorisation de `RBAC`.
+
+> Il n'est pas possible de tester d'autre privilèges à ce moment. Cela est concerner dans la courte vidéo.
+
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/65
+- Commit: https://github.com/KevinEJean/camp_api/pull/65/changes/aaed0a1b8ab0d88bc726a72ebf50781e083703b7
+
+---
+
+### Autorisation RBAC (A2) <!-- +5 -->
+
+Pas besoin d'autorisation pour lire toutes les emplacements et appréciations `(GET api/v1/locations && api/v1/ratings)`. Présentement, les clients (rôle : `USER`) n'ont pas le droit de modifier ou de supprimer leurs revues, parce qu'il n'y a pas encore moyen d'associer une appréciation à un usager. Il s'agit d'une fonctionnalité qui devrait être implémentée dans le futur. Aussi, pour préserver l'intégrité de l'API, il est impossible de créer un utilisateur ayant des droits autres que `USER`.
+
+| Action | Autorisation `ADMIN` | Autorisation `PARTNER` | Autorisation `USER` |
+|---|---|---|---|
+| Lire un emplacement par id | Oui | Oui | Oui |
+| Créer un emplacement | Oui | Oui | Non |
+| Modifier un emplacement | Oui | Non | Non |
+| Supprimer un emplacement | Oui | Non | Non |
+| Lire une appréciation par id | Oui | Oui |  Oui |
+| Créer une appréciation | Oui | Non | Oui |
+| Modifier une appréciation | Oui | Non | Non |
+| Supprimer une appréciation | Oui | Non | Non |
+| Lire un utilisateur par id | Oui | Non | Non |
+| Créer un utilisateur | Oui | Non | Non |
+| Modifier un utilisateur | Oui | Non | Non |
+| Supprimer un utilisateur | Oui | Non | Non |
+
+- Pull Request: https://github.com/KevinEJean/camp_api/pull/63
+- Commit: https://github.com/KevinEJean/camp_api/pull/63/changes/e4d2c7d1ad0cbb07b7336fc520c9ba3054967995
+
 ---
 
 ### Expliquer correctement le rôle de HTTPS dans le README (T1) <!-- +1 -->
@@ -274,116 +464,6 @@ Les données sont stockées dans un cluster MongoDB (Atlas), à cause de ses car
 -->
 ---
 
-### Utiliser une *allowList* explicite de filtres (P1) <!-- +2 -->
-
-Uniquement les requêtes ayant l'IP privée de la machine sur laquelle roule `CampusRate` peuvent effectuer des requêtes vers celui-ci. Toute autre source sera rejetée comme ceci:
-```json
-{
-  "type": "locations",
-  "title": "Internal Server Error",
-  "status": 500,
-  "detail": "An unexpected error occurred",
-  "instance": "/api/v1/locations"
-}
-```
-
-- Pull Request: https://github.com/KevinEJean/camp_api/pull/37
-- Commit: https://github.com/KevinEJean/camp_api/pull/37/changes/55359bbf42c00cd67266c78e516b34449473baa3
-
----
-
-### Sélection explicite des propriétés modifiables (P2) <!-- +2 -->
-
-Les constantes `_id` et `placeId` ne sont pas modifables parce que:
-
-- modifier une constante risque de briser l'indexation de mongoDB et est généralement une mauvaise pratiques;
-- ils sont auto-générés par le serveur, donc pas besoin de les modifier (API CampusRate).
-
-#### Données modifiables des emplacements
-
-| Variables | Modifiable | Raisonement |
-|---|---|---|
-| name | Oui | Il est possible qu'elle soit mal écrite lors de sa creation. |
-| description | Oui | Donner la chance d'ajouter / retirer des détails sur l'emplacements. |
-| category | Non | Un emplacement ne change jamais de categorie / fonctionnalité. |
-| address | Oui | Il est moins probable qu'une addresse change, cependant il est possible qu'elle soit mal écrite lors de sa creation. |
-| services | Oui | Il ce peut qu'il ajoutes des services après une construction. |
-| status | Oui | Il est très probable qu'il devient fermé en raison de construction. |
-
-#### Données modifiables des appréciations
-
-| Variables | Modifiable | Raisonement |
-|---|---|---|
-| authorName | Non | Afin de faciliter la modération et limiter les privilèges clients. |
-| rating | Oui | Donner la chance d'ajuster le score. |
-| comment | Oui | Il ce peut qu'une revue soit erroné ou l'autheur desir d'ajuster son commentaire. |
-
-- Pull Request: https://github.com/KevinEJean/camp_api/pull/62
-- Commit: https://github.com/KevinEJean/camp_api/pull/62/changes/03d1de2fd0e4e15daeec5830c2115c62268452cc
-
----
-
-### Journalisation des opérations (L1) <!-- +3 -->
-
-Exemple de log (dans le `terminal`):
-```bash
-[Nest] 25688  - 10/12/2026, 7:04:54 PM     LOG [RequestLoggerMiddleware] GET /api/v1/locations
-[Nest] 25688  - 10/12/2026, 7:04:54 PM     LOG [ExecutionTimeInterceptor] GET /api/v1/locations - 75 ms
-```
-
-Dans le fichier `log/allRequests.log`:
-```json
-{"level": "info", "message": "GET /api/v1/locations", "timestamp": "2026-10-12T23:04:54.795Z"}
-```
-
-- Pull Request: https://github.com/KevinEJean/camp_api/pull/35
-- Commit: https://github.com/KevinEJean/camp_api/pull/35/changes#diff-4fab5baaca5c14d2de62d8d2fceef376ddddcc8e9509d86cfa5643f51b89ce3d
-
----
-
-### Journalisation des erreurs (L2) <!-- +3 -->
-
-Exemple de log (dans le `terminal`):
-```json
-{
-  "level": "warn",
-  "message": "Cannot GET /api/v1/locationss",
-  "method": "GET",
-  "path": "/v1/locationss",
-  "possibleSolution": "The requested resource was not found. Verify the ID, URL or Method is correct and that the resource has not been deleted.",
-  "statusCode": 404,
-  "timestamp": "2026-10-12T23:12:14.660Z"
-}
-```
-
-- Pull Request: https://github.com/KevinEJean/camp_api/pull/57
-- Commit: https://github.com/KevinEJean/camp_api/pull/57/changes/e3b836c8921193b16d041a751ca351e035e13ed2
-
----
-
-### Autorisation RBAC (A2) <!-- +5 -->
-
-Pas besoin d'authentification pour lire `(GET api/v1/locations && api/v1/ratings)` toutes les emplacements et appréciations. 
-
-#### USER
-
-- Créer une appréciation;
-- Lire une de ses appréciations;
-- Modifier une de ses appréciations, avec l'attribut: `authorName`;
-- Supprimer une de ses appréciations, avec l'attribut: `authorName`.
-
-#### ADMIN
-
-- Créer un emplacement;
-- Lire un emplacement et une appréciation;
-- Modifier un emplacement et une appréciation;
-- Supprimer un emplacement et une appréciation.
-
-- Pull Request: https://github.com/KevinEJean/camp_api/pull/63
-- Commit: https://github.com/KevinEJean/camp_api/pull/63/changes/e4d2c7d1ad0cbb07b7336fc520c9ba3054967995
-
----
-
 ## Structure du projet
 
 ```text
@@ -392,6 +472,17 @@ src/
 ├── app.module.ts
 ├── app.service.ts
 ├── main.ts
+├── permit.module.ts
+├── auth/
+│   ├── auth.controller.ts
+│   ├── auth.module.ts
+│   ├── auth.service.ts
+│   ├── dto/
+│   │   ├── login.dto.ts
+│   │   ├── signin.dto.ts
+│   └── guard/
+│       ├── jwt-auth.guard.ts
+│       └── permission.guard.ts
 ├── configs/
 │   ├── configure-swagger.ts
 │   ├── configure-winston.ts
@@ -440,6 +531,18 @@ src/
 │   │   └── ratings.entity.ts
 │   └── schemas/
 │       └── ratings.schema.ts
+├── users/
+│   ├── users.controller.ts
+│   ├── users.module.ts
+│   ├── users.repository.ts
+│   ├── users.service.ts
+│   ├── dto/
+│   │   ├── create-users.dto.ts
+│   │   └── response-users.dto.ts
+│   ├── entities/
+│   │   └── users.entity.ts
+│   └── schemas/
+│       └── users.schema.ts
 └── utils/
     └── utils.ts
 ```
